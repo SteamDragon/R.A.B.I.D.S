@@ -6,7 +6,7 @@ Discord Bot for Your Cyberpunk Red Open Table Campain in Foundry VTT
 # Dependencies:
 * [Boost](https://www.boost.org/) (Needed to be installed)
 * [OpenSSL](https://www.openssl.org/) (Needed to be installed)
-* [OpenSSL](https://github.com/nlohmann/json) (Downloading on build)
+* [nlohmann::json](https://github.com/nlohmann/json) (Downloading on build)
 * [SleepyDiscord](https://github.com/yourWaifu/sleepy-discord) (Downloading on build)
 * [nlohmann_json::nlohmann_json](https://github.com/nlohmann/json) (Downloading on build)
 * [fmt](https://github.com/fmtlib/fmt) (Downloading on build)
