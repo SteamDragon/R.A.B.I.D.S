@@ -2,7 +2,7 @@
 Discord Bot for Your Cyberpunk Red Open Table Campain in Foundry VTT
 
 ## Current Version : 0.2.1
-
+NOTE: For proper working of all functions needed to grab number of users from FVTT (changes to source needed)
 # Dependencies:
 * [Boost](https://www.boost.org/) (Needed to be installed)
 * [OpenSSL](https://www.openssl.org/) (Needed to be installed)
