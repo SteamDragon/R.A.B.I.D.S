@@ -41,8 +41,9 @@ config::config(std::string configPath)
     serverFailedToStopMessage = jsonConfig["ServerFailedToStopMessage"];
     restartTimeoutTemplate = jsonConfig["RestartTimeoutTemplate"];
     setRestartTimeoutFailedMessage = jsonConfig["SetRestartTimeoutFailedMessage"];
-    generalError = jsonConfig["GeneralConfig"];
+    generalError = jsonConfig["GeneralError"];
     downtimeError = jsonConfig["DowntimeError"];
+    readManualError = jsonConfig["ReadManualError"];
     applicationAndArguments = jsonConfig["ApplicationAndArguments"].get<std::vector<std::string>>();
 }
 

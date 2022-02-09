@@ -37,7 +37,7 @@ void downtimeTracker::init()
     }
     
     sql = "select * from time;";
-    if (select_stmt(sql.c_str()).size == 0)
+    if (select_stmt(sql.c_str()).size() == 0)
     {
         sql = "INSERT INTO time (data) VALUES('2045-Jan-01'); ";
 

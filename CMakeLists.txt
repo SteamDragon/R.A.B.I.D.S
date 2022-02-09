@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.11)
-project ("R.A.B.I.D.S" CXX)
+project ("R.A.B.I.D.S" CXX C)
 include(FetchContent)
 FetchContent_Declare(json
     GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
@@ -52,7 +52,7 @@ if (WIN32)
 endif()
 
 find_package(OpenSSL REQUIRED)
-add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp")
+add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp" "src/downtimeTracker.cpp" "src/rabids.cpp" "src/sqlite3.c")
 add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} OpenSSL::SSL)
 target_link_libraries(${PROJECT_NAME} sleepy-discord)
