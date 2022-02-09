@@ -12,6 +12,15 @@ Discord Bot for Your Cyberpunk Red Open Table Campain in Foundry VTT
 * [fmt](https://github.com/fmtlib/fmt) (Downloading on build)
 * [sqlite3](https://www.sqlite.org/) (Already included)
 
+# Build Linux
+```sh
+git clone https://github.com/SteamDragon/R.A.B.I.D.S
+mkdir out
+cd out/
+cmake ..
+make
+```
+
 # Changelog:
 ## 0.2.1
 
