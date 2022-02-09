@@ -41,7 +41,7 @@ if(NOT sleepy-discord_POPULATED)
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(BOOST 1.68.0 REQUIRED COMPONENTS date_time log log_setup)
+find_package(BOOST 1.56 REQUIRED COMPONENTS date_time log log_setup)
 find_path(BOOST_INCLUDE_DIR boost)
 include_directories(${BOOST_INCLUDE_DIR})
 if (WIN32)
