@@ -9,7 +9,7 @@ FetchContent_Declare(json
 )
 
 FetchContent_Declare(sleepydiscord
-    GIT_REPOSITORY https://github.com/yourWaifu/sleepy-discord.git
+    GIT_REPOSITORY https://github.com/SteamDragon/sleepy-discord
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
     GIT_TAG origin/develop
@@ -40,11 +40,11 @@ if(NOT sleepy-discord_POPULATED)
     add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-set(Boost_USE_STATIC_LIBS ON)
-find_package(BOOST 1.56 REQUIRED COMPONENTS date_time log log_setup)
-find_path(BOOST_INCLUDE_DIR boost)
-include_directories(${BOOST_INCLUDE_DIR})
+SET(Boost_USE_STATIC_LIBS ON)     
+find_package(Boost 1.56 COMPONENTS date_time log log_setup REQUIRED)
 if (WIN32)
+	find_path(BOOST_INCLUDE_DIR boost)
+        include_directories(${BOOST_INCLUDE_DIR})
 	set(BOOST_LIBRARIES ${Boost_LIBRARY_DIRS}/boost_system-vc140-mt.lib)
 	if (CMAKE_BUILD_TYPE MATCHES "Debug")
 		set(BOOST_LIBRARIES ${Boost_LIBRARY_DIRS}/../debug/lib/boost_system-vc140-mt-gd.lib)
@@ -54,4 +54,13 @@ endif()
 find_package(OpenSSL REQUIRED)
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp")
 add_subdirectory(src)
-target_link_libraries(${PROJECT_NAME}  PUBLIC ${Boost_LIBRARIES} fmt OpenSSL::SSL nlohmann_json::nlohmann_json sleepy-discord fmt)
+target_link_libraries(${PROJECT_NAME} OpenSSL::SSL)
+target_link_libraries(${PROJECT_NAME} sleepy-discord)
+target_link_libraries(${PROJECT_NAME} fmt)
+target_link_libraries(${PROJECT_NAME} dl)
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
+if (WIN32)
+	target_link_libraries(${PROJECT_NAME}  ${Boost_LIBRARIES})
+else()
+    target_link_libraries(R.A.B.I.D.S Boost::log_setup Boost::log)
+endif()
