@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <string>
 #include <time.h>
 #include <thread>
 #ifndef WIN32
