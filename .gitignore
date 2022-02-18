@@ -34,3 +34,5 @@
 # techno directories
 out/*
 .vs/*
+build/
+.vscode/
