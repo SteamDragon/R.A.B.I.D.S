@@ -24,10 +24,10 @@
 #include <openssl/sha.h>
 #include <nlohmann/json.hpp>
 #include <fcntl.h>
-#include "sleepy_discord/sleepy_discord.h"
-#include "sleepy_discord/slash_commands.h"
 #include <config.h>
 #include <downtimeTracker.h>
+#include <sleepy_discord/slash_commands.h>
+#include <sleepy_discord/sleepy_discord.h>
 
 using json = nlohmann::json;
 #define PIPE_READ 0
