@@ -1,22 +1,8 @@
 ﻿#pragma once
 
-#ifndef WIN32
-#include <unistd.h>
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <signal.h>
 #include <fmt/format.h>
-#include <stdexcept>
-#include <openssl/evp.h>
-#include <openssl/sha.h>
-#include <nlohmann/json.hpp>
-#include <fcntl.h>
 #include <config.h>
 #include <downtimeTracker.h>
-#include <sleepy_discord/slash_commands.h>
 #include <sleepy_discord/sleepy_discord.h>
 
 using json = nlohmann::json;
@@ -37,6 +23,9 @@ public:
 	void onMessage(SleepyDiscord::Message message) override;
 	void startClient(config externalConfig);
 	void onInteraction(SleepyDiscord::Interaction interaction) override;
+	void onReady(SleepyDiscord::Ready ready) override;
+	void onFirstConnect();
+	std::string Register(SleepyDiscord::User user, std::string password);
 
 private:
 	config *configuration;
@@ -66,6 +55,7 @@ private:
 	void cleanLocalDatabases();
 	void scheduleRestart();
 	void SendErrorMessage();
+	
 	std::string dbUsers;
 	std::string tempUsers;
 	std::string dbActors;

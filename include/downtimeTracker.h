@@ -1,14 +1,5 @@
+#pragma once
 #include "sqlite3.h"
-#include <string>
-#include <iostream>
-#include <vector>
-#include <numeric>
-#include <algorithm>
-#include <cctype>
-#include <locale>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <downtimeEntry.h>
 #include <config.h>

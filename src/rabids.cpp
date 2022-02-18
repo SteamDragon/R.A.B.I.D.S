@@ -27,6 +27,26 @@ void pop_front(std::vector<T> &vec)
 	vec.pop_back();
 }
 
+namespace Command
+{
+	using Verb = std::function<
+		void(
+			RABIDS &,
+			SleepyDiscord::Interaction &)>;
+	struct Command
+	{
+		std::string name;
+		Verb verb;
+	};
+	using MappedCommands = std::unordered_map<std::string, Command>;
+	using MappedCommand = MappedCommands::value_type;
+	static MappedCommands all;
+	static void addCommand(Command command)
+	{
+		all.emplace(command.name, command);
+	}
+}
+
 /// <summary>
 /// Get current date/time, format is YYYY-MM-DD HH:mm:ss
 /// </summary>
@@ -62,75 +82,24 @@ std::string random_string(size_t length, std::function<char(void)> rand_char)
 
 void RABIDS::onInteraction(SleepyDiscord::Interaction interaction)
 {
-	return;
+	auto foundCommand = Command::all.find(interaction.data.name);
+	if (foundCommand == Command::all.end())
+	{
+		// not found
+		SleepyDiscord::Interaction::Response<> response;
+		response.type = SleepyDiscord::Interaction::CallbackType::ChannelMessageWithSource;
+		response.data.content = "Couldn't find command";
+		response.data.flags = SleepyDiscord::InteractionAppCommandCallbackData::Flags::Ephemeral;
+		createInteractionResponse(interaction, interaction.token, response);
+		return;
+	}
+	foundCommand->second.verb(*this, interaction);
 }
 
 void RABIDS::onMessage(SleepyDiscord::Message message)
 {
 	std::string channel = message.channelID;
 	std::string server = message.serverID;
-	if (server.empty())
-	{
-		// PROCESS PM
-		if (message.startsWith("reg"))
-		{
-			LOG(info) << "Registration Called for " << message.author.username;
-			std::string salt = message.author.ID;
-			std::string pwd = message.content.substr(4);
-			char hexResult[2 * SHA512_DIGEST_LENGTH + 1];
-			memset(hexResult, 0, sizeof(hexResult));
-			PBKDF2_HMAC_SHA_512(pwd.c_str(), reinterpret_cast<const unsigned char *>(salt.c_str()), 1000, SHA512_DIGEST_LENGTH, hexResult);
-			json user = RABIDS::GetUserToUpdate(salt);
-			if (user["name"] == "name")
-			{
-				user["name"] = "-- " + message.author.username + " --";
-			}
-
-			user["password"] = hexResult;
-			users.push_back(user);
-
-			json actor = RABIDS::GetActorToUpdate(user);
-			if (actor.dump() != "{\"status\":\"null\"}")
-			{
-				actors.push_back(RABIDS::GetActorToUpdate(user));
-			}
-
-			if (checkServerStatus() == ServerStatus::READY)
-			{
-				std::string s = configuration->TimedRegistrationString() + std::to_string(numberOfPlayers);
-				sendMessage(message.channelID, s);
-			}
-			else
-			{
-				sendMessage(message.channelID, configuration->SucceedRegistrationString());
-			}
-
-			dbChanged = true;
-			if (!users.empty())
-			{
-				std::ofstream dataUsers(tempUsersInternal, std::ios::out | std::ios::app);
-				for (json user : users)
-				{
-					dataUsers << user.dump();
-				}
-
-				dataUsers.close();
-			}
-
-			if (!actors.empty())
-			{
-				std::ofstream dataActors(tempActorsInternal, std::ios::out | std::ios::app);
-				for (json actor : actors)
-				{
-					dataActors << actor.dump();
-				}
-
-				dataActors.close();
-			}
-
-			return;
-		}
-	}
 
 	if (channel != configuration->ChannelId())
 	{
@@ -390,6 +359,72 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	}
 }
 
+std::string RABIDS::Register(SleepyDiscord::User user, std::string password)
+{
+	std::string result;
+	try
+	{
+		LOG(info) << "Registration Called for " << user.username;
+		std::string salt = user.ID;
+		std::string pwd = password;
+		char hexResult[2 * SHA512_DIGEST_LENGTH + 1];
+		memset(hexResult, 0, sizeof(hexResult));
+		PBKDF2_HMAC_SHA_512(pwd.c_str(), reinterpret_cast<const unsigned char *>(salt.c_str()), 1000, SHA512_DIGEST_LENGTH, hexResult);
+		json userJson = RABIDS::GetUserToUpdate(salt);
+		if (userJson["name"] == "name")
+		{
+			userJson["name"] = "-- " + user.username + " --";
+		}
+
+		userJson["password"] = hexResult;
+		users.push_back(userJson);
+
+		json actor = RABIDS::GetActorToUpdate(userJson);
+		if (actor.dump() != "{\"status\":\"null\"}")
+		{
+			actors.push_back(RABIDS::GetActorToUpdate(userJson));
+		}
+
+		if (checkServerStatus() == ServerStatus::READY)
+		{
+			result = configuration->TimedRegistrationString() + std::to_string(numberOfPlayers);
+		}
+		else
+		{
+			result = configuration->SucceedRegistrationString();
+		}
+
+		dbChanged = true;
+		if (!users.empty())
+		{
+			std::ofstream dataUsers(tempUsersInternal, std::ios::out | std::ios::app);
+			for (json user : users)
+			{
+				dataUsers << user.dump();
+			}
+
+			dataUsers.close();
+		}
+
+		if (!actors.empty())
+		{
+			std::ofstream dataActors(tempActorsInternal, std::ios::out | std::ios::app);
+			for (json actor : actors)
+			{
+				dataActors << actor.dump();
+			}
+
+			dataActors.close();
+		}
+	}
+	catch (...)
+	{
+		result = "Failed to create user";
+	}
+
+	return result;
+}
+
 bool RABIDS::startServer()
 {
 	LOG(info) << "Starting Server";
@@ -524,10 +559,7 @@ void RABIDS::startClient(config externalConfig)
 	tempActors = configuration->TempFolder() + "/" + configuration->ActorsDatabaseName();
 	tempUsersInternal = configuration->TempFolder() + "/" + configuration->LocalUserDB();
 	tempActorsInternal = configuration->TempFolder() + "/" + configuration->LocalActorDB();
-	if (!std::filesystem::create_directories(std::filesystem::path(configuration->TempFolder())))
-	{
-		LOG(info) << configuration->TempFolder() << " created";
-	}
+	std::filesystem::create_directories(std::filesystem::path(configuration->TempFolder()));
 
 	tracker.init();
 	this->loadLocalDatabases();
@@ -554,8 +586,60 @@ void RABIDS::startClient(config externalConfig)
 						   LOG(info) << "Restart Scheduled";
 						   scheduleRestart(); },
 				   configuration->RestartInterval() - configuration->AlertInterval());
+
 	this->run();
 	exit(0);
+}
+
+void RABIDS::onReady(SleepyDiscord::Ready ready)
+{
+	static int connectCount = 0;
+	connectCount += 1;
+	if (connectCount == 1)
+	{
+		onFirstConnect();
+	}
+}
+
+void RABIDS::onFirstConnect()
+{
+	{
+		Command::Command reg{
+			"reg", [](
+					   RABIDS &client,
+					   SleepyDiscord::Interaction &interaction)
+			{
+				std::string password;
+				for (auto &option : interaction.data.options)
+				{
+					std::string pwd;
+					if (option.get(pwd))
+					{
+						password = pwd;
+						break;
+					}
+				}
+				std::string responseMessage = client.Register(interaction.user, password);
+
+				SleepyDiscord::Interaction::Response<> response;
+				response.type = SleepyDiscord::Interaction::CallbackType::ChannelMessageWithSource;
+				response.data.content = responseMessage;
+				client.createInteractionResponse(interaction.ID, interaction.token, response);
+				return;
+			}};
+
+		std::vector<SleepyDiscord::AppCommand::Option> options;
+
+		SleepyDiscord::AppCommand::Option password;
+		password.name = "password";
+		password.isRequired = true;
+		password.description = "Password to register or change password";
+		password.type = SleepyDiscord::AppCommand::Option::TypeHelper<std::string>::getType();
+		options.push_back(std::move(password));
+
+		createGlobalAppCommand(getID(), reg.name, "Perform registration", std::move(options));
+		Command::addCommand(reg);
+	}
 }
 
 void RABIDS::SendErrorMessage()
@@ -727,11 +811,7 @@ json RABIDS::GetUserToUpdate(std::string userId)
 
 void RABIDS::updateLocalDBInstance()
 {
-	if (!std::filesystem::create_directories(std::filesystem::path(configuration->TempFolder())))
-	{
-		LOG(info) << configuration->TempFolder() << " created";
-	}
-
+	std::filesystem::create_directories(std::filesystem::path(configuration->TempFolder()));
 	std::filesystem::copy(dbActors, tempActors, std::filesystem::copy_options::overwrite_existing);
 	std::filesystem::copy(dbUsers, tempUsers, std::filesystem::copy_options::overwrite_existing);
 }

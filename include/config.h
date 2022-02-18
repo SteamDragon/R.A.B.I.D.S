@@ -1,9 +1,5 @@
 #pragma once
-#include <string>
-#include <iostream>
-#include <iomanip>
 #include <fstream>
-#include <vector>
 #include <nlohmann/json.hpp>
 #include "boost/log/trivial.hpp"
 #include "boost/log/utility/setup.hpp"
@@ -18,7 +14,7 @@ public:
     config(std::string configPath);
     config();
     ~config();
-    const std::string Version = "0.2.1";
+    const std::string Version = "0.2.2";
     std::string HelpMessage();
     std::string ServerOffMessage();
     std::string DbUpdateMessage();
