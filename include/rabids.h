@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <functional> //for std::function
-#include <algorithm>  //for std::generate_n
 #include <string>
 #include <time.h>
 #include <thread>
