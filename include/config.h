@@ -14,7 +14,7 @@ public:
     config(std::string configPath);
     config();
     ~config();
-    const std::string Version = "0.2.2";
+    const std::string Version = "0.2.3";
     std::string HelpMessage();
     std::string ServerOffMessage();
     std::string DbUpdateMessage();

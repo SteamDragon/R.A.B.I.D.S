@@ -648,16 +648,16 @@ void RABIDS::SendErrorMessage()
 
 void RABIDS::scheduleRestart()
 {
-	if (numberOfPlayers == 0)
+	if (numberOfPlayers == 0 && checkServerStatus() == ServerStatus::READY)
 	{
 		sendMessage(configuration->AlertChannelId(), configuration->AlertMessage());
 		this->schedule([this]()
 					   {
-				stopServer();
-				startServer();
-			this->schedule([this]() {
-				scheduleRestart();
-			}, configuration->RestartInterval() - configuration->AlertInterval()); },
+						   stopServer();
+						   startServer();
+						   this->schedule([this]() {
+							   scheduleRestart();
+							   }, configuration->RestartInterval() - configuration->AlertInterval()); },
 					   configuration->RestartInterval() - configuration->AlertInterval());
 	}
 	else

@@ -1,7 +1,7 @@
 # R.A.B.I.D.S
 Discord Bot for Your Cyberpunk Red Open Table Campain in Foundry VTT
 
-## Current Version : 0.2.2
+## Current Version : 0.2.3
 NOTE: For proper working of all functions needed to grab number of users from FVTT (changes to source needed)
 # Dependencies:
 * [Boost](https://www.boost.org/) (Needed to be installed)
@@ -22,6 +22,10 @@ make
 ```
 
 # Changelog:
+## 0.2.3
+
+1. When server is stopped no restart will be performed
+   
 ## 0.2.2
 
 1. Changed Registration function to Slash command one
