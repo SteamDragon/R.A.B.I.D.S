@@ -13,38 +13,68 @@ config::config(std::string configPath)
 
     input.close();
     jsonConfig = json::parse(config);
+    
+    LOG(info) << "Configuration storage load";
     restartInterval = jsonConfig["RestartInterval"];
+    LOG(info) << "RestartInterval: " << restartInterval;
     alertInterval = jsonConfig["AlertInterval"];
-
+    LOG(info) << "AlertInterval: " << alertInterval;
     helpMessage = jsonConfig["HelpMessage"];
+    LOG(info) << "HelpMessage: " << helpMessage;
     serverOffMessage = jsonConfig["ServerOffMessage"];
+    LOG(info) << "ServerOffMessage: " << serverOffMessage;
     dbUpdateMessage = jsonConfig["DBUpdateMessage"];
+    LOG(info) << "DBUpdateMessage: " << dbUpdateMessage;
     dBFolder = jsonConfig["DBFolder"];
+    LOG(info) << "DBFolder: " << dBFolder;
     tempFolder = jsonConfig["TempFolder"];
+    LOG(info) << "TempFolder: " << tempFolder;
     usersDatabaseName = jsonConfig["UsersDatabaseName"];
+    LOG(info) << "UsersDatabaseName: " << usersDatabaseName;
     actorsDatabaseName = jsonConfig["ActorsDatabaseName"];
+    LOG(info) << "ActorsDatabaseName: " << actorsDatabaseName;
     localUserDB = jsonConfig["LocalUserDB"];
+    LOG(info) << "LocalUserDB: " << localUserDB;
     localActorDB = jsonConfig["LocalActorDB"];
+    LOG(info) << "LocalActorDB: " << localActorDB;
     playerCountFile = jsonConfig["PlayerCountFile"];
+    LOG(info) << "PlayerCountFile: " << playerCountFile;
     channelId = jsonConfig["ChannelId"];
+    LOG(info) << "ChannelId: " << channelId;
     alertChannelId = jsonConfig["AlertChannelId"];
+    LOG(info) << "AlertChannelId: " << alertChannelId;
     timedRegistrationString = jsonConfig["TimedRegistrationString"];
+    LOG(info) << "TimedRegistrationString: " << timedRegistrationString;
     succeedRegistrationString = jsonConfig["SucceedRegistrationString"];
+    LOG(info) << "SucceedRegistrationString: " << succeedRegistrationString;
     userTemplate = jsonConfig["UserTemplate"];
     token = jsonConfig["Token"];
+    LOG(info) << "Token: " << token;
     alertMessage = jsonConfig["AlertMessage"];
+    LOG(info) << "AlertMessage: " << alertMessage;
     actorTemplate = jsonConfig["ActorTemplate"];
     readyMessage = jsonConfig["ReadyMessage"];
+    LOG(info) << "ReadyMessage: " << readyMessage;
     serverStartedMessage = jsonConfig["ServerStartedMessage"];
+    LOG(info) << "ServerStartedMessage: " << serverStartedMessage;
     serverFailedToStartMessage = jsonConfig["ServerFailedToStartMessage"];
+    LOG(info) << "ServerFailedToStartMessage: " << serverFailedToStartMessage;
     serverStoppedMessage = jsonConfig["ServerStoppedMessage"];
+    LOG(info) << "ServerStoppedMessage: " << serverStoppedMessage;
     serverFailedToStopMessage = jsonConfig["ServerFailedToStopMessage"];
+    LOG(info) << "ServerFailedToStopMessage: " << serverFailedToStopMessage;
     restartTimeoutTemplate = jsonConfig["RestartTimeoutTemplate"];
+    LOG(info) << "RestartTimeoutTemplate: " << restartTimeoutTemplate;
     setRestartTimeoutFailedMessage = jsonConfig["SetRestartTimeoutFailedMessage"];
+    LOG(info) << "SetRestartTimeoutFailedMessage: " << setRestartTimeoutFailedMessage;
     generalError = jsonConfig["GeneralError"];
+    LOG(info) << "GeneralError: " << generalError;
     downtimeError = jsonConfig["DowntimeError"];
+    LOG(info) << "DowntimeError: " << downtimeError;
     readManualError = jsonConfig["ReadManualError"];
+    LOG(info) << "ReadManualError: " << readManualError;
     applicationAndArguments = jsonConfig["ApplicationAndArguments"].get<std::vector<std::string>>();
+    LOG(info) << "Configuration storage load: Done";
 }
 
 config::~config()
