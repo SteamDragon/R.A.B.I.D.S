@@ -667,9 +667,13 @@ void RABIDS::scheduleRestart()
 			startServer();
 			this->schedule([this]() { scheduleRestart(); }, configuration->RestartInterval() - configuration->AlertInterval());
 		}
-		catch (...)
+		catch (const std::exception& e)
 		{
-			LOG(warning) << "FAILED TO RESTART: " << std::current_exception()->what();
+			LOG(warning) << "FAILED TO RESTART: " << e.what();
+		}
+		catch(...)
+		{
+			LOG(warning) << "FAILED TO RESTART: " << "Something strange happened";
 		} });
 		return;
 	}
