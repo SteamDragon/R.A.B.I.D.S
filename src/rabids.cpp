@@ -659,21 +659,15 @@ void RABIDS::scheduleRestart()
 	if (numberOfPlayers == 0)
 	{
 		sendMessage(configuration->AlertChannelId(), configuration->AlertMessage());
-		this->schedule([this]()
-					   {
-						   try{
-							   stopServer();
-							   startServer();
-							   this->schedule([this]() {
-								   scheduleRestart();
-								   }, configuration->RestartInterval() - configuration->AlertInterval()); },
-								   configuration->RestartInterval() - configuration->AlertInterval());
-								   }
-								}
-								catch(...)
-								{
-									LOG(error)<<"FAILED TO RESTART: " << current_exception().what();
-								}					   
+		this->schedule([this](){
+		try{
+			stopServer();
+			startServer();
+			this->schedule([this]() {scheduleRestart();}, configuration->RestartInterval() - configuration->AlertInterval()); }, configuration->RestartInterval() - configuration->AlertInterval());
+			catch(...)
+			{
+				LOG(error)<<"FAILED TO RESTART: " << current_exception().what();
+			}});			   				   
 		return;
 	}
 	else
