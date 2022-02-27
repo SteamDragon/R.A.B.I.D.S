@@ -661,13 +661,18 @@ void RABIDS::scheduleRestart()
 		sendMessage(configuration->AlertChannelId(), configuration->AlertMessage());
 		this->schedule([this]()
 					   {
-			stopServer();
-			startServer();
-			this->schedule([this]() {
-				scheduleRestart();
-				}, configuration->RestartInterval() - configuration->AlertInterval()); },
-					   configuration->RestartInterval() - configuration->AlertInterval());
-					   
+						   try{
+							   stopServer();
+							   startServer();
+							   this->schedule([this]() {
+								   scheduleRestart();
+								   }, configuration->RestartInterval() - configuration->AlertInterval()); },
+								   configuration->RestartInterval() - configuration->AlertInterval());
+								}
+								catch(...)
+								{
+									LOG(error)<<"FAILED TO RESTART";
+								}					   
 		return;
 	}
 	else
