@@ -4,6 +4,7 @@
 #include <config.h>
 #include <downtimeTracker.h>
 #include <sleepy_discord/sleepy_discord.h>
+#include <exception>
 
 using json = nlohmann::json;
 #define PIPE_READ 0

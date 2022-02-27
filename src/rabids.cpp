@@ -669,7 +669,7 @@ void RABIDS::scheduleRestart()
 		}
 		catch (...)
 		{
-			LOG(error) << "FAILED TO RESTART: " << current_exception().what();
+			LOG(warning) << "FAILED TO RESTART: " << std::current_exception().what();
 		} });
 		return;
 	}
