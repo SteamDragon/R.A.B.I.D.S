@@ -668,10 +668,11 @@ void RABIDS::scheduleRestart()
 								   scheduleRestart();
 								   }, configuration->RestartInterval() - configuration->AlertInterval()); },
 								   configuration->RestartInterval() - configuration->AlertInterval());
+								   }
 								}
 								catch(...)
 								{
-									LOG(error)<<"FAILED TO RESTART";
+									LOG(error)<<"FAILED TO RESTART: " << current_exception().what();
 								}					   
 		return;
 	}
