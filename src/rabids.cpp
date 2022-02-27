@@ -674,7 +674,8 @@ void RABIDS::scheduleRestart()
 		catch(...)
 		{
 			LOG(warning) << "FAILED TO RESTART: " << "Something strange happened";
-		} });
+		} },
+					   configuration->AlertInterval());
 		return;
 	}
 	else
