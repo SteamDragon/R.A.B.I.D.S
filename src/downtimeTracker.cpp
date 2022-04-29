@@ -243,13 +243,11 @@ std::string downtimeTracker::FormTable()
 
 void downtimeTracker::AddHealing(std::string discordId, int numberOfDaysToHeal, int cryo)
 {
-    auto record = GetRecord(discordId);
+    auto record = GetRecord(discordId);    
     int c = std::stoi(record[6]) + cryo;
     int number = std::stoi(record[5]) + numberOfDaysToHeal;
     auto sql = std::string("Update downtime set Healing=").append(std::to_string(number)).append(", Cryo=").append(std::to_string(c)).append(" where DiscordID  = \"").append(discordId).append("\";");
-
-    LOG(info) << 1;
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);    
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
