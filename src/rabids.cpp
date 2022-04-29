@@ -325,22 +325,33 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			{
 				records.push_back(s);
 			}
-
 			if (records.size() < 2)
 			{
 				sendMessage(message.channelID, configuration->ReadManualError());
 			}
 
-			int number = std::stoi(records[2]);
+			int index = 1;
+			while (records[index].empty())
+			{
+				index++;
+			}
+
+			int number = std::stoi(records[index]);
 			if (records.size() < 3)
 			{
 				cryo = 0;
 			}
 			else
 			{
-				cryo = std::stoi(records[3]);
-			}
 
+				while (records[index + 1].empty())
+				{
+					index++;
+				}
+
+				cryo = std::stoi(records[index + 1]);
+			}
+			
 			tracker.AddHealing(message.mentions[0].ID, number, cryo);
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
 				channelId = downtimeChannel;
