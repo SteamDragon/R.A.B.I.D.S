@@ -294,6 +294,13 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 				records.push_back(mention.ID);
 			}
 
+			if(records.size() == 0)
+			{
+				LOG(info) << "Adding of Downtime failed: no Data Entered";
+				sendMessage(message.channelID, "Invalid Request");
+				return;
+			}
+
 			tracker.AddDowntimes(records, number);
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
 				channelId = downtimeChannel;
@@ -309,6 +316,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			LOG(error) << "Adding of Downtime Failed: " << message.content;
 			sendMessage(message.channelID, configuration->DowntimeError());
 		}
+		
 		return;
 	}
 
@@ -325,6 +333,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			{
 				records.push_back(s);
 			}
+
 			if (records.size() < 2)
 			{
 				sendMessage(message.channelID, configuration->ReadManualError());
