@@ -31,10 +31,9 @@ jobs:
       - name: Setup C++ environment
         run: |
           gcc --version
-          sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
-          sudo apt-get update
-          sudo apt install gcc-10 gcc-10-base gcc-10-doc g++-10
-          sudo apt install libstdc++-10-dev libstdc++-10-doc 
+          sudo apt-get --purge remove gcc*
+          sudo apt update
+          sudo apt install build-essential
           gcc --version
 
       - name: boost
@@ -71,7 +70,7 @@ jobs:
       - name: Run build-wrapper
         run: |
           gcc --version
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} make clean
           
 
       - name: Run sonar-scanner
@@ -80,6 +79,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
+
+      - name: build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
           
         
         
