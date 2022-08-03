@@ -51,8 +51,8 @@ jobs:
 
       - name: Prepare artifacts
         run: |
-        mkdir -p ${{github.workspace}}/build/x64
-        mv ${{github.workspace}}/build/R.A.B.I.D.S ${{github.workspace}}/build/x64/
+          mkdir -p ${{github.workspace}}/build/x64
+          mv ${{github.workspace}}/build/R.A.B.I.D.S ${{github.workspace}}/build/x64/
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
