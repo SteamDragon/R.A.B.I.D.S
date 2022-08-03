@@ -1,5 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.11)
 project ("R.A.B.I.D.S" CXX C)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 include(FetchContent)
 FetchContent_Declare(json
     GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
