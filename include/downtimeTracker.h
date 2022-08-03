@@ -29,14 +29,14 @@ private:
     sqlite3 *ppDB;
     const std::string downtimeDB = "data/downtime.db";
     int rc;
-    char *zErrMsg = 0;
+    char *zErrMsg = nullptr;
     sqlite3_stmt *stmt;
 
     Records GetAll();
     Record GetRecord(std::string discordId);
     static int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_names)
     {
-        Records *records = static_cast<Records *>(p_data);
+        auto records = static_cast<Records *>(p_data);
         try
         {
             records->emplace_back(p_fields, p_fields + num_fields);
@@ -49,16 +49,16 @@ private:
         return 0;
     }
 
-    Records select_stmt(const char *stmt)
+    Records select_stmt(const char *stmt_)
     {
         Records records;
         try
         {
             char *errmsg;
-            int ret = sqlite3_exec(ppDB, stmt, select_callback, &records, &errmsg);
+            int ret = sqlite3_exec(ppDB, stmt_, select_callback, &records, &errmsg);
             if (ret != SQLITE_OK)
             {
-                std::cerr << "Error in select statement " << stmt << "[" << errmsg << "]\n";
+                std::cerr << "Error in select statement " << stmt_ << "[" << errmsg << "]\n";
             }
         }
         catch (...)

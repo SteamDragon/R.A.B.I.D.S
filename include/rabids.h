@@ -16,7 +16,7 @@ enum ServerStatus
 	DBUPDATE = 2
 };
 
-typedef std::vector<char> char_array;
+using char_array=std::vector<char>;
 class RABIDS : public SleepyDiscord::DiscordClient
 {
 public:
@@ -30,7 +30,6 @@ public:
 
 private:
 	config *configuration;
-	bool statusUpdated = false;
 	bool updatingDB = false;
 	bool dbChanged = false;
 	void scheduleStatusUpdate();
@@ -69,5 +68,3 @@ private:
 	std::string downtimeMessage = "938512392332120106";
 	std::string prevErrorMsg;
 };
-
-static std::string errorMessage = "";
