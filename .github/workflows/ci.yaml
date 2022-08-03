@@ -12,7 +12,7 @@ jobs:
     uses: ./.github/workflows/x64.yaml
 
   aarch64:
-    uses: ./.github/workflows/aarch64.yaml
+    uses: ./.github/workflows/aarch64.yml
 
   release:
     needs: x64,aarch64
