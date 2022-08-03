@@ -29,7 +29,7 @@ jobs:
         id: runcmd
         with:
           arch: aarch64
-          distro: ubuntu-latest
+          distro: ubuntu_latest
 
       - name: boost
         run: |
