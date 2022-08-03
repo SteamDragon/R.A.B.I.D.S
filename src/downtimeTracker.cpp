@@ -262,5 +262,11 @@ void downtimeTracker::InsertEntry(std::string const & discordId, std::string con
     }
 }
 
-downTimeEntry::downTimeEntry(std::string const & userName, std::string const & actorName, int const & downtimeDays, int healing, int cryo) : UserName(userName), ActorName (actorName),  DowntimeDays (downtimeDays), Healing (healing), Cryo (cryo)
-{}
+downTimeEntry::downTimeEntry(std::string const & userName, std::string const & actorName, int downtimeDays, int healing, int cryo)
+{
+    UserName = userName;
+    ActorName = actorName;
+    DowntimeDays = downtimeDays;
+    Healing = healing;
+    Cryo = cryo;
+}
