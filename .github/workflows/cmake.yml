@@ -30,10 +30,12 @@ jobs:
 
       - name: Setup C++ environment
         run: |
+          gcc --version
           sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
           sudo apt-get update
           sudo apt install gcc-10 gcc-10-base gcc-10-doc g++-10
           sudo apt install libstdc++-10-dev libstdc++-10-doc 
+          gcc --version
 
       - name: boost
         run: |
@@ -68,6 +70,7 @@ jobs:
 
       - name: Run build-wrapper
         run: |
+          gcc --version
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
           
 
