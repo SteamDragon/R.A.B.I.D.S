@@ -32,7 +32,7 @@ private:
     sqlite3_stmt *stmt;
 
     Records GetAll();
-    Record GetRecord(std::string discordId);
+    Record GetRecord(std::string const & discordId);
     static int select_callback(void *p_data, int num_fields, char **p_fields,[[maybe_unused]] char **p_col_names)
     {
         auto records = static_cast<Records *>(p_data);
