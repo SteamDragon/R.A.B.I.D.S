@@ -31,9 +31,9 @@ jobs:
       - name: Setup C++ environment
         run: |
           gcc --version
-          sudo apt-get --purge remove gcc*
-          sudo apt update
-          sudo apt install build-essential
+          sudo apt-get -y autoremove --purge gcc*
+          sudo apt-get update
+          sudo apt -y install gcc-11
           gcc --version
 
       - name: boost
