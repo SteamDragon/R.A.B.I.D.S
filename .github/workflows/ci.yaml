@@ -11,10 +11,7 @@ jobs:
   x64:
     uses: ./.github/workflows/x64.yml
 
-  aarch64:
-    uses: ./.github/workflows/aarch64.yml
-
   release:
-    needs: [x64,aarch64]
+    needs: [x64]
     if: startsWith(github.ref, 'refs/tags/v')
     uses: ./.github/workflows/release.yaml
