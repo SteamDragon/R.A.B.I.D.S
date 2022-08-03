@@ -40,17 +40,11 @@ if(NOT sleepy-discord_POPULATED)
     add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-set(BOOST_REQUESTED_VERSION 1.56)
-SET(Boost_USE_STATIC_LIBS ON)     
-find_package(Boost COMPONENTS date_time log log_setup REQUIRED)
-if (WIN32)
-	find_path(BOOST_INCLUDE_DIR boost)
-        include_directories(${BOOST_INCLUDE_DIR})
-	set(BOOST_LIBRARIES ${Boost_LIBRARY_DIRS}/boost_system-vc140-mt.lib)
-	if (CMAKE_BUILD_TYPE MATCHES "Debug")
-		set(BOOST_LIBRARIES ${Boost_LIBRARY_DIRS}/../debug/lib/boost_system-vc140-mt-gd.lib)
-	endif()
-endif()
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(BOOST_REQUESTED_VERSION "1.73.0")
+
+find_package(Boost COMPONENTS date_time log log_setup)
 
 find_package(OpenSSL REQUIRED)
 add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp" "src/downtimeTracker.cpp" "src/rabids.cpp" "src/sqlite3.c")
