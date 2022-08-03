@@ -34,18 +34,6 @@ jobs:
           name: R.A.B.I.D.S-x64.zip
           path: ./R.A.B.I.D.S-x64.zip
 
-      - name: Build aarch64 deploy archive
-        uses: vimtor/action-zip@v1
-        with:
-          files: ./artifacts/aarch64/
-          dest: ./R.A.B.I.D.S-aarch64.zip
-
-      - name: Upload aarch64 deploy archive
-        uses: actions/upload-artifact@v3
-        with:
-          name: R.A.B.I.D.S-aarch64.zip
-          path: ./R.A.B.I.D.S-aarch64.zip
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -59,16 +47,6 @@ jobs:
             ### put data here
           draft: true
           prerelease: false
-
-      - name: Upload R.A.B.I.D.S-aarch64.zip
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./R.A.B.I.D.S-aarch64.zip
-          asset_name: R.A.B.I.D.S-aarch64.zip
-          asset_content_type: application/zip
 
       - name: Upload R.A.B.I.D.S-x64.zip
         uses: actions/upload-release-asset@v1
