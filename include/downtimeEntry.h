@@ -3,7 +3,7 @@
 class downTimeEntry
 {
 public:
-    downTimeEntry();
+    downTimeEntry() = default;
     downTimeEntry(std::string userName, std::string ActorName, int downtimeDays, int healing, int cryo);
     std::string UserName;
     std::string ActorName;

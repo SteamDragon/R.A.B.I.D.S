@@ -6,11 +6,10 @@
 #include <VariadicTable.h>
 using Record = std::vector<std::string>;
 using Records = std::vector<Record>;
-static downTimeEntry data;
 class downtimeTracker
 {
 public:
-    downtimeTracker();
+    downtimeTracker() = default;
     ~downtimeTracker();
     void init();
     downTimeEntry GetDowntimeEntry(std::string actorName);
@@ -34,7 +33,7 @@ private:
 
     Records GetAll();
     Record GetRecord(std::string discordId);
-    static int select_callback(void *p_data, int num_fields, char **p_fields, char **p_col_names)
+    static int select_callback(void *p_data, int num_fields, char **p_fields,[[maybe_unused]] char **p_col_names)
     {
         auto records = static_cast<Records *>(p_data);
         try
@@ -69,7 +68,7 @@ private:
         return records;
     }
 
-    static int callback(void *NotUsed, int argc, char **argv, char **azColName)
+    static int callback([[maybe_unused]] void *NotUsed, [[maybe_unused]] int argc, [[maybe_unused]] char **argv,[[maybe_unused]] char **azColName)
     {
         return 0;
     }

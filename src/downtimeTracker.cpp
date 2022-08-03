@@ -1,10 +1,6 @@
 #include "downtimeTracker.h"
 #include "VariadicTable.h"
 
-downtimeTracker::downtimeTracker()
-{
-}
-
 void downtimeTracker::init()
 {
     sqlite3_open(downtimeDB.c_str(), &ppDB);
@@ -17,7 +13,7 @@ void downtimeTracker::init()
                       "Healing        INT DEFAULT 0,"
                       "Cryo         INT DEFAULT 0);";
 
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -28,7 +24,7 @@ void downtimeTracker::init()
     sql = "CREATE TABLE IF NOT EXISTS time("
           "data           TEXT  DEFAULT \"\");";
 
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -41,7 +37,7 @@ void downtimeTracker::init()
     {
         sql = "INSERT INTO time (data) VALUES('2045-Jan-01'); ";
 
-        rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+        rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
         if (rc != SQLITE_OK)
         {
             std::cerr << "SQL error: " << zErrMsg;
@@ -57,7 +53,7 @@ void downtimeTracker::UpdateDate(int daysToAdd)
     boost::gregorian::date date(boost::gregorian::from_simple_string(dateString));
     boost::gregorian::date_duration dd(daysToAdd);
     auto sql = std::string("Update time set data = \"").append(boost::gregorian::to_simple_string(date + dd)).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -78,7 +74,7 @@ downtimeTracker::~downtimeTracker()
     sqlite3_close(ppDB);
 }
 
-downTimeEntry downtimeTracker::GetDowntimeEntry(std::string actorName)
+downTimeEntry downtimeTracker::GetDowntimeEntry(std::string const & actorName)
 {
     auto sql = std::string("Select * from downtime where downtime.ActorName == \"").append(actorName).append("\";");
     Records records = select_stmt(sql.c_str());
@@ -112,11 +108,11 @@ void downtimeTracker::AddDowntimes(std::vector<std::string> notAddDowntimeList, 
             }
         }
     }
-    auto commaSepara = [](std::string a, std::string b)
+    auto commaSepara = [](std::string a, std::string const & b)
     {
         if (b == "")
         {
-            return std::move(a);
+            return a;
         }
 
         return std::move(a) + "\" AND DiscordID <> \"" + b;
@@ -130,7 +126,7 @@ void downtimeTracker::AddDowntimes(std::vector<std::string> notAddDowntimeList, 
                                                                                                                                                                                    notAddDowntimeList[0], // start with first element
                                                                                                                                                                                    commaSepara))
                    .append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -138,10 +134,10 @@ void downtimeTracker::AddDowntimes(std::vector<std::string> notAddDowntimeList, 
     }
 }
 
-void downtimeTracker::ReduceDowntimes(std::string discordId, int numberOfDays)
+void downtimeTracker::ReduceDowntimes(std::string const & discordId, int numberOfDays)
 {
     auto sql = std::string("Update downtime set DowntimeDays = DowntimeDays - ").append(std::to_string(numberOfDays)).append(" where DiscordID  = \"").append(discordId).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -149,7 +145,7 @@ void downtimeTracker::ReduceDowntimes(std::string discordId, int numberOfDays)
     }
 }
 
-void downtimeTracker::ReduceHealing(std::string discordId, int numberOfDays)
+void downtimeTracker::ReduceHealing(std::string const & discordId, int numberOfDays)
 {
     auto record = GetRecord(discordId);
     int cryo = std::stoi(record[6]);
@@ -185,7 +181,7 @@ Records downtimeTracker::GetAll()
     return select_stmt(sql);
 }
 
-Record downtimeTracker::GetRecord(std::string discordId)
+Record downtimeTracker::GetRecord(std::string const & discordId)
 {
     auto sql = std::string("select * from downtime  where DiscordID  = \"") + discordId + "\"";
     return select_stmt(sql.c_str()).front();
@@ -241,7 +237,7 @@ std::string downtimeTracker::FormTable()
     return ss.str();
 }
 
-void downtimeTracker::AddHealing(std::string discordId, int numberOfDaysToHeal, int cryo)
+void downtimeTracker::AddHealing(std::string const & discordId, int numberOfDaysToHeal, int cryo)
 {
     auto record = GetRecord(discordId);    
     int c = std::stoi(record[6]) + cryo;
@@ -255,7 +251,7 @@ void downtimeTracker::AddHealing(std::string discordId, int numberOfDaysToHeal, 
     }
 }
 
-void downtimeTracker::InsertEntry(std::string discordId, std::string userName, std::string actorName)
+void downtimeTracker::InsertEntry(std::string const & discordId, std::string const & userName, std::string const & actorName)
 {
     auto sql = std::string("INSERT into downtime (DiscordID, UserName,ActorName) VALUES (\"").append(discordId).append("\",\"").append(userName).append("\",\"").append(actorName).append("\");");
     rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
@@ -266,15 +262,9 @@ void downtimeTracker::InsertEntry(std::string discordId, std::string userName, s
     }
 }
 
-downTimeEntry::downTimeEntry()
-{
-}
-
-downTimeEntry::downTimeEntry(std::string userName, std::string actorName, int downtimeDays, int healing, int cryo)
-{
-    UserName = userName;
-    ActorName = actorName;
-    DowntimeDays = downtimeDays;
-    Healing = healing;
-    Cryo = cryo;
-}
+downTimeEntry::downTimeEntry(std::string const & userName, std::string const & actorName, int const & downtimeDays, int healing, int cryo) : UserName(userName),
+ ActorName (actorName),
+  DowntimeDays (downtimeDays),
+  Healing (healing),
+  Cryo (cryo)
+{}
