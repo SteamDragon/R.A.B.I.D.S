@@ -1,4 +1,4 @@
-name: CMake
+name: Build_Linux_x64
 
 on:
   push:
@@ -76,6 +76,18 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"
+      
+      - name: Prepare artifacts
+        run: |
+        mkdir -p ${{github.workspace}}/build/x64
+        mv ${{github.workspace}}/build/R.A.B.I.D.S ${{github.workspace}}/build/x64/
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: R.A.B.I.D.S_x64
+          path: ${{github.workspace}}/build/x64
+          retention-days: 0
           
         
         
