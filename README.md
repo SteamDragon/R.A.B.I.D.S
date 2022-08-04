@@ -4,6 +4,7 @@ Discord Bot for Your Cyberpunk Red Open Table Campain in Foundry VTT
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/SteamDragon/R.A.B.I.D.S)
 ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/SteamDragon/R.A.B.I.D.S?include_prereleases)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/SteamDragon/R.A.B.I.D.S/Release)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=SteamDragon_R.A.B.I.D.S&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=SteamDragon_R.A.B.I.D.S)
 
 ## Current Version : 0.2.3
 NOTE: For proper working of all functions needed to grab number of users from FVTT (changes to source needed)
