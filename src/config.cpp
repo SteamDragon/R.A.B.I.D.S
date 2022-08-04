@@ -86,7 +86,7 @@ config::~config()
 config::config() : config("config.cfg")
 {}
 
-config::config(config& others) : config(config.GetConfigPath())
+config::config(config& others) : config(others.GetConfigPath())
 {  
 }
 
