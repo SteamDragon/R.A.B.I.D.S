@@ -83,8 +83,11 @@ config::~config()
     output << std::setw(4) << jsonConfig << std::endl;
 }
 
-config::config()
-{
+config::config() : config("config.cfg")
+{}
+
+config::config(config& others) : config(config.GetConfigPath())
+{  
 }
 
 std::string config::HelpMessage()
@@ -215,6 +218,11 @@ std::string config::RestartTimeoutTemplate()
 std::string config::SetRestartTimeoutFailedMessage()
 {
     return setRestartTimeoutFailedMessage;
+}
+
+std::string config::GetConfigPath()
+{
+    return _configPath;
 }
 
 std::string config::GeneralError()

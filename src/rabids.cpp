@@ -53,11 +53,13 @@ namespace Command
 /// <returns>Time string</returns>
 std::string CurrentTime()
 {
-	time_t now = time(0);
-	struct tm tstruct;
 	char buf[80];
+	time_t current_time;
+	struct tm local_time;
+	time(&current_time);
+	localtime_r(&current_time, &local_time);
 	tstruct = *localtime(&now);
-	strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+	strftime(buf, sizeof(buf), "%Y-%m-%d %X", &local_time);
 
 	return buf;
 }

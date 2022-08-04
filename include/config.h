@@ -12,6 +12,7 @@ class config
 {
 public:
     config(std::string configPath);
+    config(config& config);
     config();
     ~config();
     const std::string Version = "0.2.3";
@@ -44,6 +45,7 @@ public:
     std::string GeneralError();
     std::string DowntimeError();
     std::string ReadManualError();
+    std::string GetConfigPath();
 
     std::vector<std::string> ApplicationAndArguments();
 
