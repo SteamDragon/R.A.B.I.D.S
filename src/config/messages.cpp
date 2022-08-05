@@ -6,16 +6,16 @@ Messages::Messages()
 
 Messages::Messages(messagesTemplate messageTemplate)
 {
-    alertMessage = template.alertMessage;
-    serverOffMessage = template.serverOffMessage;
-    dbUpdateMessage= template.dbUpdateMessage;
-    serverStartedMessage = template.serverStartedMessage;
-    serverFailedToStartMessage= template.serverFailedToStartMessage;
-    serverStoppedMessage = template.serverStoppedMessage;
-    serverFailedToStopMessage = template.serverFailedToStopMessage;
-    readyMessage = template.readyMessage;
-    helpMessage = template.helpMessage;
-    setRestartTimeoutFailedMessage = template.setRestartTimeoutFailedMessage;
+    alertMessage = messageTemplate.alertMessage;
+    serverOffMessage = messageTemplate.serverOffMessage;
+    dbUpdateMessage= messageTemplate.dbUpdateMessage;
+    serverStartedMessage = messageTemplate.serverStartedMessage;
+    serverFailedToStartMessage= messageTemplate.serverFailedToStartMessage;
+    serverStoppedMessage = messageTemplate.serverStoppedMessage;
+    serverFailedToStopMessage = messageTemplate.serverFailedToStopMessage;
+    readyMessage = messageTemplate.readyMessage;
+    helpMessage = messageTemplate.helpMessage;
+    setRestartTimeoutFailedMessage = messageTemplate.setRestartTimeoutFailedMessage;
 }
 
 std::string Messages::AlertMessage()
