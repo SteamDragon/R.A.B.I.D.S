@@ -1,52 +1,51 @@
 #include "config.h"
 
-config::config(std::string configPath)
-{
-    std::string config = "";
-    std::string line;
-    _configPath = configPath;
-    std::ifstream input(_configPath);
-    while (std::getline(input, line))
-    {
-        config.append(line);
-    }
+config::config(std::string configPath): config_path_(std::move(configPath)) {
+	std::string config;
+	std::string line;
+	std::ifstream input(_configPath);
+	while (std::getline(input, line))
+	{
+		config.append(line);
+	}
 
-    input.close();
-    jsonConfig = json::parse(config);
-    
-    LOG(info) << "Configuration storage load";
-    restartInterval = jsonConfig["RestartInterval"];
-    alertInterval = jsonConfig["AlertInterval"];
-    helpMessage = jsonConfig["HelpMessage"];
-    serverOffMessage = jsonConfig["ServerOffMessage"];
-    dbUpdateMessage = jsonConfig["DBUpdateMessage"];
-    dBFolder = jsonConfig["DBFolder"];
-    tempFolder = jsonConfig["TempFolder"];
-    usersDatabaseName = jsonConfig["UsersDatabaseName"];
-    actorsDatabaseName = jsonConfig["ActorsDatabaseName"];
-    localUserDB = jsonConfig["LocalUserDB"];
-    localActorDB = jsonConfig["LocalActorDB"];
-    playerCountFile = jsonConfig["PlayerCountFile"];
-    channelId = jsonConfig["ChannelId"];
-    alertChannelId = jsonConfig["AlertChannelId"];
-    timedRegistrationString = jsonConfig["TimedRegistrationString"];
-    succeedRegistrationString = jsonConfig["SucceedRegistrationString"];
-    userTemplate = jsonConfig["UserTemplate"];
-    token = jsonConfig["Token"];
-    alertMessage = jsonConfig["AlertMessage"];
-    actorTemplate = jsonConfig["ActorTemplate"];
-    readyMessage = jsonConfig["ReadyMessage"];
-    serverStartedMessage = jsonConfig["ServerStartedMessage"];
-    serverFailedToStartMessage = jsonConfig["ServerFailedToStartMessage"];
-    serverStoppedMessage = jsonConfig["ServerStoppedMessage"];
-    serverFailedToStopMessage = jsonConfig["ServerFailedToStopMessage"];
-    restartTimeoutTemplate = jsonConfig["RestartTimeoutTemplate"];
-    setRestartTimeoutFailedMessage = jsonConfig["SetRestartTimeoutFailedMessage"];
-    generalError = jsonConfig["GeneralError"];
-    downtimeError = jsonConfig["DowntimeError"];
-    readManualError = jsonConfig["ReadManualError"];
-    applicationAndArguments = jsonConfig["ApplicationAndArguments"].get<std::vector<std::string>>();
-    LOG(info) << "Configuration storage load: Done";
+	input.close();
+	jsonConfig = json::parse(config);
+	messagesTemplate template_;
+	LOG(info) << "Configuration storage load";
+	restartInterval = jsonConfig["RestartInterval"];
+	alertInterval = jsonConfig["AlertInterval"];
+	template_.helpMessage = jsonConfig["HelpMessage"];
+	template_.serverOffMessage = jsonConfig["ServerOffMessage"];
+	template_.dbUpdateMessage = jsonConfig["DBUpdateMessage"];
+	dBFolder = jsonConfig["DBFolder"];
+	tempFolder = jsonConfig["TempFolder"];
+	usersDatabaseName = jsonConfig["UsersDatabaseName"];
+	actorsDatabaseName = jsonConfig["ActorsDatabaseName"];
+	localUserDB = jsonConfig["LocalUserDB"];
+	localActorDB = jsonConfig["LocalActorDB"];
+	playerCountFile = jsonConfig["PlayerCountFile"];
+	channelId = jsonConfig["ChannelId"];
+	alertChannelId = jsonConfig["AlertChannelId"];
+	timedRegistrationString = jsonConfig["TimedRegistrationString"];
+	succeedRegistrationString = jsonConfig["SucceedRegistrationString"];
+	userTemplate = jsonConfig["UserTemplate"];
+	token = jsonConfig["Token"];
+	template_.alertMessage = jsonConfig["AlertMessage"];
+	actorTemplate = jsonConfig["ActorTemplate"];
+	template_.readyMessage = jsonConfig["ReadyMessage"];
+	template_.serverStartedMessage = jsonConfig["ServerStartedMessage"];
+	template_.serverFailedToStartMessage = jsonConfig["ServerFailedToStartMessage"];
+	template_.serverStoppedMessage = jsonConfig["ServerStoppedMessage"];
+	template_.serverFailedToStopMessage = jsonConfig["ServerFailedToStopMessage"];
+	restartTimeoutTemplate = jsonConfig["RestartTimeoutTemplate"];
+	template_.setRestartTimeoutFailedMessage = jsonConfig["SetRestartTimeoutFailedMessage"];
+	generalError = jsonConfig["GeneralError"];
+	downtimeError = jsonConfig["DowntimeError"];
+	readManualError = jsonConfig["ReadManualError"];
+	applicationAndArguments = jsonConfig["ApplicationAndArguments"].get<std::vector<std::string>>();
+	TextMessages = Messages(template_);
+	LOG(info) << "Configuration storage load: Done";
 }
 
 config::~config()
@@ -60,21 +59,6 @@ config::config() : config("config.cfg")
 
 config::config(config& others) : config(others.GetConfigPath())
 {  
-}
-
-std::string config::HelpMessage()
-{
-    return helpMessage;
-}
-
-std::string config::ServerOffMessage()
-{
-    return serverOffMessage;
-}
-
-std::string config::DbUpdateMessage()
-{
-    return dbUpdateMessage;
 }
 
 std::string config::BotVersionString()
@@ -147,49 +131,14 @@ std::string config::Token()
     return token;
 }
 
-std::string config::AlertMessage()
-{
-    return alertMessage;
-}
-
 std::string config::ActorTemplate()
 {
     return actorTemplate;
 }
 
-std::string config::ReadyMessage()
-{
-    return readyMessage;
-}
-
-std::string config::ServerStartedMessage()
-{
-    return serverStartedMessage;
-}
-
-std::string config::ServerFailedToStartMessage()
-{
-    return serverFailedToStartMessage;
-}
-
-std::string config::ServerStoppedMessage()
-{
-    return serverStoppedMessage;
-}
-
-std::string config::ServerFailedToStopMessage()
-{
-    return serverFailedToStopMessage;
-}
-
 std::string config::RestartTimeoutTemplate()
 {
     return restartTimeoutTemplate;
-}
-
-std::string config::SetRestartTimeoutFailedMessage()
-{
-    return setRestartTimeoutFailedMessage;
 }
 
 std::string config::GetConfigPath()
@@ -217,12 +166,12 @@ std::vector<std::string> config::ApplicationAndArguments()
     return applicationAndArguments;
 }
 
-long long config::RestartInterval()
+long long config::RestartInterval() const
 {
     return restartInterval;
 }
 
-long long config::AlertInterval()
+long long config::AlertInterval() const
 {
     return alertInterval;
 }

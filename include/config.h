@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include "boost/log/trivial.hpp"
 #include "boost/log/utility/setup.hpp"
+#include "config/messages.h"
 
 #define LOG(level) BOOST_LOG_TRIVIAL(level)
 
@@ -16,9 +17,7 @@ public:
     config();
     ~config();
     const std::string Version = "0.2.3";
-    std::string HelpMessage();
-    std::string ServerOffMessage();
-    std::string DbUpdateMessage();
+    std::string config_path_;
     std::string BotVersionString();
     std::string DBFolder();
     std::string TempFolder();
@@ -33,25 +32,19 @@ public:
     std::string SucceedRegistrationString();
     std::string UserTemplate();
     std::string Token();
-    std::string AlertMessage();
     std::string ActorTemplate();
-    std::string ReadyMessage();
-    std::string ServerStartedMessage();
-    std::string ServerFailedToStartMessage();
-    std::string ServerStoppedMessage();
-    std::string ServerFailedToStopMessage();
     std::string RestartTimeoutTemplate();
     std::string GeneralError();
     std::string DowntimeError();
     std::string ReadManualError();
     std::string GetConfigPath();
-    std::string SetRestartTimeoutFailedMessage();
 
     std::vector<std::string> ApplicationAndArguments();
+    Messages TextMessages;
 
-    long long RestartInterval();
+    long long RestartInterval() const;
     void SetRestartInterval(long long newRestartInterval);
-    long long AlertInterval();
+    long long AlertInterval() const;
 
 private:
     json jsonConfig;
@@ -82,7 +75,6 @@ private:
     std::string serverStoppedMessage;
     std::string serverFailedToStopMessage;
     std::string restartTimeoutTemplate;
-    std::string setRestartTimeoutFailedMessage;
     std::string generalError;
     std::string downtimeError;
     std::string readManualError;
