@@ -212,7 +212,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			actorname.erase(0, pos + 1);
 			trim(username);
 			trim(actorname);
-			tracker.InsertEntry(message.mentions[0].ID, username, actorname);
+			tracker.InsertEntry(std::string(message.mentions[0].ID), username, actorname);
 			sendMessage(message.channelID, "Done");
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
 				channelId = downtimeChannel;
@@ -266,7 +266,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			LOG(info) << records[1];
 			int number = std::stoi(records[1]);
 			auto mention = message.mentions[0];
-			tracker.ReduceDowntimes(mention.ID, number);
+			tracker.ReduceDowntimes(std::string(mention.ID), number);
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
 				channelId = downtimeChannel;
 			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
@@ -362,7 +362,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 				cryo = std::stoi(records[index + 1]);
 			}
 			
-			tracker.AddHealing(message.mentions[0].ID, number, cryo);
+			tracker.AddHealing(std::string(message.mentions[0].ID), number, cryo);
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
 				channelId = downtimeChannel;
 			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
