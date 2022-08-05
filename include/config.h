@@ -45,8 +45,7 @@ public:
     std::string const DowntimeError();
     std::string const ReadManualError();
     std::string const GetConfigPath();
-
-    std::string SetRestartTimeoutFailedMessage();
+    std::string const SetRestartTimeoutFailedMessage();
 
     std::vector<std::string> const ApplicationAndArguments();
 

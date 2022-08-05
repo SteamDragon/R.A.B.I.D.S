@@ -100,7 +100,7 @@ std::string const config::ServerOffMessage()
     return serverOffMessage;
 }
 
-std::string config::DbUpdateMessage()
+std::string const config::DbUpdateMessage()
 {
     return dbUpdateMessage;
 }
@@ -197,17 +197,17 @@ std::string const config::ServerStartedMessage()
 
 std::string const config::ServerFailedToStartMessage()
 {
-    return const serverFailedToStartMessage;
+    return serverFailedToStartMessage;
 }
 
-std::string config::ServerStoppedMessage()
+std::string const config::ServerStoppedMessage()
 {
-    return const serverStoppedMessage;
+    return serverStoppedMessage;
 }
 
-std::string config::ServerFailedToStopMessage()
+std::string const config::ServerFailedToStopMessage()
 {
-    return const serverFailedToStopMessage;
+    return serverFailedToStopMessage;
 }
 
 std::string const config::RestartTimeoutTemplate()

@@ -7,9 +7,8 @@
 #include <exception>
 
 using json = nlohmann::json;
-#define PIPE_READ 0
-#define PIPE_WRITE 1
-enum ServerStatus
+enum class PIPE {PIPE_READ, PIPE_WRITE};
+enum class ServerStatus
 {
 	OFF = 0,
 	READY = 1,
