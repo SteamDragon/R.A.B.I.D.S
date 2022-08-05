@@ -68,6 +68,16 @@ std::string downtimeTracker::GetDate()
     return select_stmt(sql.c_str()).front().front();
 }
 
+std::string downtimeTracker::GetLastHealList()
+{
+    return LastHealList;
+}
+
+std::string downtimeTracker::GetLastCryoList()
+{
+    return LastCryoList;
+}
+
 downtimeTracker::~downtimeTracker()
 {
     sqlite3_finalize(stmt);

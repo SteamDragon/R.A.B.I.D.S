@@ -307,8 +307,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 				channelId = downtimeChannel;
 			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
 			editMessage(channelId, dtMessageId, tracker.FormTable());
-			sendMessage(message.channelID, "Healing: " + tracker.LastHealList);
-			sendMessage(message.channelID, "Cryo: " + tracker.LastCryoList);
+			sendMessage(message.channelID, "Healing: " + tracker.GetLastHealList());
+			sendMessage(message.channelID, "Cryo: " + tracker.GetLastCryoList());
 			sendMessage(message.channelID, "Done");
 			LOG(info) << "Adding of Downtime succeed: " << message.content;
 		}

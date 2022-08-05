@@ -21,10 +21,12 @@ public:
     std::string FormTable();
     std::string GetDate();
     void UpdateDate(int daysToAdd);
-    std::string LastHealList;
-    std::string LastCryoList;
+    std::string GetLastHealList();
+    std::string GetLastCryoList();
 
 private:
+    std::string LastHealList;
+    std::string LastCryoList;
     sqlite3 *ppDB;
     const std::string downtimeDB = "data/downtime.db";
     int rc;
