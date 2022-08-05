@@ -90,167 +90,167 @@ config::config(config& others) : config(others.GetConfigPath())
 {  
 }
 
-std::string config::HelpMessage()
+const std::string config::HelpMessage()
 {
     return helpMessage;
 }
 
-std::string config::ServerOffMessage()
+const std::string config::ServerOffMessage()
 {
     return serverOffMessage;
 }
 
-std::string config::DbUpdateMessage()
+const std::string config::DbUpdateMessage()
 {
     return dbUpdateMessage;
 }
 
-std::string config::BotVersionString()
+const std::string config::BotVersionString()
 {
     return botVersionString;
 }
 
-std::string config::DBFolder()
+const std::string config::DBFolder()
 {
     return dBFolder;
 }
 
-std::string config::TempFolder()
+const std::string config::TempFolder()
 {
     return tempFolder;
 }
 
-std::string config::UsersDatabaseName()
+const std::string config::UsersDatabaseName()
 {
     return usersDatabaseName;
 }
 
-std::string config::ActorsDatabaseName()
+const std::string config::ActorsDatabaseName()
 {
     return actorsDatabaseName;
 }
 
-std::string config::LocalUserDB()
+const std::string config::LocalUserDB()
 {
     return localUserDB;
 }
 
-std::string config::LocalActorDB()
+const std::string config::LocalActorDB()
 {
     return localActorDB;
 }
 
-std::string config::PlayerCountFile()
+const std::string config::PlayerCountFile()
 {
     return playerCountFile;
 }
 
-std::string config::ChannelId()
+const std::string config::ChannelId()
 {
     return channelId;
 }
 
-std::string config::AlertChannelId()
+const std::string config::AlertChannelId()
 {
     return alertChannelId;
 }
 
-std::string config::TimedRegistrationString()
+const std::string config::TimedRegistrationString()
 {
     return timedRegistrationString;
 }
 
-std::string config::SucceedRegistrationString()
+const std::string config::SucceedRegistrationString()
 {
     return succeedRegistrationString;
 }
 
-std::string config::UserTemplate()
+const std::string config::UserTemplate()
 {
     return userTemplate;
 }
 
-std::string config::Token()
+const std::string config::Token()
 {
     return token;
 }
 
-std::string config::AlertMessage()
+const std::string config::AlertMessage()
 {
     return alertMessage;
 }
 
-std::string config::ActorTemplate()
+const std::string config::ActorTemplate()
 {
     return actorTemplate;
 }
 
-std::string config::ReadyMessage()
+const std::string config::ReadyMessage()
 {
     return readyMessage;
 }
 
-std::string config::ServerStartedMessage()
+const std::string config::ServerStartedMessage()
 {
     return serverStartedMessage;
 }
 
-std::string config::ServerFailedToStartMessage()
+const std::string config::ServerFailedToStartMessage()
 {
     return serverFailedToStartMessage;
 }
 
-std::string config::ServerStoppedMessage()
+const std::string config::ServerStoppedMessage()
 {
     return serverStoppedMessage;
 }
 
-std::string config::ServerFailedToStopMessage()
+const std::string config::ServerFailedToStopMessage()
 {
     return serverFailedToStopMessage;
 }
 
-std::string config::RestartTimeoutTemplate()
+const std::string config::RestartTimeoutTemplate()
 {
     return restartTimeoutTemplate;
 }
 
-std::string config::SetRestartTimeoutFailedMessage()
+const std::string config::SetRestartTimeoutFailedMessage()
 {
     return setRestartTimeoutFailedMessage;
 }
 
-std::string config::GetConfigPath()
+const std::string config::GetConfigPath()
 {
     return _configPath;
 }
 
-std::string config::GeneralError()
+const std::string config::GeneralError()
 {
     return generalError;
 }
 
-std::string config::DowntimeError()
+const std::string config::DowntimeError()
 {
     return downtimeError;
 }
 
-std::string config::ReadManualError()
+const std::string config::ReadManualError()
 {
     return readManualError;
 }
 
-std::vector<std::string> config::ApplicationAndArguments()
+const std::vector<std::string> config::ApplicationAndArguments()
 {
     return applicationAndArguments;
 }
 
-long long config::RestartInterval()
+const long long config::RestartInterval()
 {
     return restartInterval;
 }
 
-long long config::AlertInterval()
+const long long config::AlertInterval()
 {
     return alertInterval;
 }
