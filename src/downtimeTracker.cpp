@@ -74,7 +74,7 @@ downtimeTracker::~downtimeTracker()
     sqlite3_close(ppDB);
 }
 
-downTimeEntry downtimeTracker::GetDowntimeEntry(std::string const & actorName)
+downTimeEntry downtimeTracker::GetDowntimeEntry(std::string_view actorName)
 {
     auto sql = std::string("Select * from downtime where downtime.ActorName == \"").append(actorName).append("\";");
     Records records = select_stmt(sql.c_str());
@@ -108,7 +108,7 @@ void downtimeTracker::AddDowntimes(std::vector<std::string> notAddDowntimeList, 
             }
         }
     }
-    auto commaSepara = [](std::string a, std::string const & b)
+    auto commaSepara = [](std::string a, std::string_view b)
     {
         if (b == "")
         {
@@ -134,7 +134,7 @@ void downtimeTracker::AddDowntimes(std::vector<std::string> notAddDowntimeList, 
     }
 }
 
-void downtimeTracker::ReduceDowntimes(std::string const & discordId, int numberOfDays)
+void downtimeTracker::ReduceDowntimes(std::string_view discordId, int numberOfDays)
 {
     auto sql = std::string("Update downtime set DowntimeDays = DowntimeDays - ").append(std::to_string(numberOfDays)).append(" where DiscordID  = \"").append(discordId).append("\";");
     rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
@@ -145,7 +145,7 @@ void downtimeTracker::ReduceDowntimes(std::string const & discordId, int numberO
     }
 }
 
-void downtimeTracker::ReduceHealing(std::string const & discordId, int numberOfDays)
+void downtimeTracker::ReduceHealing(std::string_view discordId, int numberOfDays)
 {
     auto record = GetRecord(discordId);
     int cryo = std::stoi(record[6]);
@@ -181,7 +181,7 @@ Records downtimeTracker::GetAll()
     return select_stmt(sql);
 }
 
-Record downtimeTracker::GetRecord(std::string const & discordId)
+Record downtimeTracker::GetRecord(std::string_view discordId)
 {
     auto sql = std::string("select * from downtime  where DiscordID  = \"") + discordId + "\"";
     return select_stmt(sql.c_str()).front();
@@ -237,7 +237,7 @@ std::string downtimeTracker::FormTable()
     return ss.str();
 }
 
-void downtimeTracker::AddHealing(std::string const & discordId, int numberOfDaysToHeal, int cryo)
+void downtimeTracker::AddHealing(std::string_view discordId, int numberOfDaysToHeal, int cryo)
 {
     auto record = GetRecord(discordId);    
     int c = std::stoi(record[6]) + cryo;
@@ -251,7 +251,7 @@ void downtimeTracker::AddHealing(std::string const & discordId, int numberOfDays
     }
 }
 
-void downtimeTracker::InsertEntry(std::string const & discordId, std::string const & userName, std::string const & actorName)
+void downtimeTracker::InsertEntry(std::string_view discordId, std::string_view userName, std::string_view actorName)
 {
     auto sql = std::string("INSERT into downtime (DiscordID, UserName,ActorName) VALUES (\"").append(discordId).append("\",\"").append(userName).append("\",\"").append(actorName).append("\");");
     rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
@@ -262,7 +262,7 @@ void downtimeTracker::InsertEntry(std::string const & discordId, std::string con
     }
 }
 
-downTimeEntry::downTimeEntry(std::string const & userName, std::string const & actorName, int downtimeDays, int healing, int cryo)
+downTimeEntry::downTimeEntry(std::string_view userName, std::string_view actorName, int downtimeDays, int healing, int cryo)
 {
     UserName = userName;
     ActorName = actorName;

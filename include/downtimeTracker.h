@@ -12,12 +12,12 @@ public:
     downtimeTracker() = default;
     ~downtimeTracker();
     void init();
-    downTimeEntry GetDowntimeEntry(std::string const & actorName);
-    void InsertEntry(std::string const & discordId, std::string const & userName, std::string const & actorName);
+    downTimeEntry GetDowntimeEntry(std::string_view actorName);
+    void InsertEntry(std::string_view discordId, std::string_view userName, std::string_view actorName);
     void AddDowntimes(std::vector<std::string> notAddDowntimeList, int numberOfDowntimes = 1);
-    void ReduceDowntimes(std::string const & actorName, int numberOfDays);
-    void AddHealing(std::string const & discordId, int numberOfDaysToHeal, int cryo = 0);
-    void ReduceHealing(std::string const & discordId, int numberOfDays);
+    void ReduceDowntimes(std::string_view actorName, int numberOfDays);
+    void AddHealing(std::string_view discordId, int numberOfDaysToHeal, int cryo = 0);
+    void ReduceHealing(std::string_view discordId, int numberOfDays);
     std::string FormTable();
     std::string GetDate();
     void UpdateDate(int daysToAdd);
@@ -32,7 +32,7 @@ private:
     sqlite3_stmt *stmt;
 
     Records GetAll();
-    Record GetRecord(std::string const & discordId);
+    Record GetRecord(std::string_view discordId);
     static int select_callback(void *p_data, int num_fields, char **p_fields,[[maybe_unused]] char **p_col_names)
     {
         auto records = static_cast<Records *>(p_data);
