@@ -58,7 +58,6 @@ std::string CurrentTime()
 	struct tm local_time;
 	time(&current_time);
 	localtime_r(&current_time, &local_time);
-	tstruct = *localtime(&now);
 	strftime(buf, sizeof(buf), "%Y-%m-%d %X", &local_time);
 
 	return buf;
