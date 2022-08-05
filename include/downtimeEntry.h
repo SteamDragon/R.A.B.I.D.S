@@ -4,7 +4,7 @@ class downTimeEntry
 {
 public:
     downTimeEntry() = default;
-    downTimeEntry(std::string const & userName, std::string const & ActorName, int downtimeDays, int healing, int cryo);
+    downTimeEntry(std::string_view userName, std::string_view ActorName, int downtimeDays, int healing, int cryo);
     std::string UserName;
     std::string ActorName;
     std::string LastHealList;
