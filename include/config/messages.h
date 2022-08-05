@@ -28,6 +28,7 @@ public:
     std::string ServerFailedToStopMessage();
     std::string ReadyMessage(); 
     std::string HelpMessage();
+    std::string SetRestartTimeoutFailedMessage();
 
 private:
     std::string alertMessage;
@@ -39,4 +40,5 @@ private:
     std::string serverFailedToStopMessage;
     std::string readyMessage;
     std::string helpMessage;
+    std::string setRestartTimeoutFailedMessage;
 };

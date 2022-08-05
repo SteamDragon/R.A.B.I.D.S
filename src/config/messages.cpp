@@ -15,6 +15,7 @@ Messages::Messages(messagesTemplate messageTemplate)
     serverFailedToStopMessage = template.serverFailedToStopMessage;
     readyMessage = template.readyMessage;
     helpMessage = template.helpMessage;
+    setRestartTimeoutFailedMessage = template.setRestartTimeoutFailedMessage;
 }
 
 std::string Messages::AlertMessage()
@@ -60,4 +61,9 @@ std::string Messages::ReadyMessage()
 std::string Messages::HelpMessage()
 {
     return helpMessage;
+}
+
+std::string Messages::SetRestartTimeoutFailedMessage()
+{
+    return setRestartTimeoutFailedMessage;
 }

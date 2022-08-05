@@ -1,5 +1,10 @@
 ﻿#include "rabids.h"
+
+#include <filesystem>
+#include <random>
+
 #include "stdiohandler.h"
+#include <experimental/filesystem>
 
 char_array charset()
 {
@@ -110,7 +115,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	if (message.startsWith("help"))
 	{
 		LOG(info) << "Help Called for " << message.author.username;
-		sendMessage(message.channelID, configuration->HelpMessage());
+		sendMessage(message.channelID, configuration->TextMessages.HelpMessage());
 		return;
 	}
 
@@ -126,13 +131,13 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	{
 		if (startServer())
 		{
-			LOG(info) << configuration->ServerStartedMessage();
-			sendMessage(message.channelID, configuration->ServerStartedMessage());
+			LOG(info) << configuration->TextMessages.ServerStartedMessage();
+			sendMessage(message.channelID, configuration->TextMessages.ServerStartedMessage());
 		}
 		else
 		{
-			LOG(error) << configuration->ServerFailedToStartMessage();
-			sendMessage(message.channelID, configuration->ServerFailedToStartMessage());
+			LOG(error) << configuration->TextMessages.ServerFailedToStartMessage();
+			sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStartMessage());
 		}
 
 		return;
@@ -142,13 +147,13 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	{
 		if (stopServer())
 		{
-			LOG(info) << configuration->ServerStoppedMessage();
-			sendMessage(message.channelID, configuration->ServerStoppedMessage());
+			LOG(info) << configuration->TextMessages.ServerStoppedMessage();
+			sendMessage(message.channelID, configuration->TextMessages.ServerStoppedMessage());
 		}
 		else
 		{
-			LOG(error) << configuration->ServerFailedToStopMessage();
-			sendMessage(message.channelID, configuration->ServerFailedToStopMessage());
+			LOG(error) << configuration->TextMessages.ServerFailedToStopMessage();
+			sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStopMessage());
 		}
 
 		return;
@@ -167,8 +172,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		}
 		catch (...)
 		{
-			LOG(error) << configuration->SetRestartTimeoutFailedMessage();
-			sendMessage(message.channelID, configuration->SetRestartTimeoutFailedMessage());
+			LOG(error) << configuration->TextMessages.SetRestartTimeoutFailedMessage();
+			sendMessage(message.channelID, configuration->TextMessages.SetRestartTimeoutFailedMessage());
 		}
 
 		return;
@@ -178,24 +183,24 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	{
 		if (stopServer())
 		{
-			LOG(info) << configuration->ServerStoppedMessage();
-			sendMessage(message.channelID, configuration->ServerStoppedMessage());
+			LOG(info) << configuration->TextMessages.ServerStoppedMessage();
+			sendMessage(message.channelID, configuration->TextMessages.ServerStoppedMessage());
 
 			if (startServer())
 			{
-				LOG(info) << configuration->ServerStartedMessage();
-				sendMessage(message.channelID, configuration->ServerStartedMessage());
+				LOG(info) << configuration->TextMessages.ServerStartedMessage();
+				sendMessage(message.channelID, configuration->TextMessages.ServerStartedMessage());
 			}
 			else
 			{
-				LOG(error) << configuration->ServerFailedToStartMessage();
-				sendMessage(message.channelID, configuration->ServerFailedToStartMessage());
+				LOG(error) << configuration->TextMessages.ServerFailedToStartMessage();
+				sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStartMessage());
 			}
 		}
 		else
 		{
-			LOG(error) << configuration->ServerFailedToStopMessage();
-			sendMessage(message.channelID, configuration->ServerFailedToStopMessage());
+			LOG(error) << configuration->TextMessages.ServerFailedToStopMessage();
+			sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStopMessage());
 		}
 
 		return;
@@ -390,7 +395,7 @@ std::string RABIDS::Register(SleepyDiscord::User user, std::string password)
 		char hexResult[2 * SHA512_DIGEST_LENGTH + 1];
 		memset(hexResult, 0, sizeof(hexResult));
 		PBKDF2_HMAC_SHA_512(pwd.c_str(), reinterpret_cast<const unsigned char *>(salt.c_str()), 1000, SHA512_DIGEST_LENGTH, hexResult);
-		json userJson = RABIDS::GetUserToUpdate(salt);
+		json userJson = GetUserToUpdate(salt);
 		if (userJson["name"] == "name")
 		{
 			userJson["name"] = "-- " + user.username + " --";
@@ -418,9 +423,9 @@ std::string RABIDS::Register(SleepyDiscord::User user, std::string password)
 		if (!users.empty())
 		{
 			std::ofstream dataUsers(tempUsersInternal, std::ios::out | std::ios::app);
-			for (json user : users)
+			for (json user_json : users)
 			{
-				dataUsers << user.dump();
+				dataUsers << user_json.dump();
 			}
 
 			dataUsers.close();
@@ -429,9 +434,9 @@ std::string RABIDS::Register(SleepyDiscord::User user, std::string password)
 		if (!actors.empty())
 		{
 			std::ofstream dataActors(tempActorsInternal, std::ios::out | std::ios::app);
-			for (json actor : actors)
+			for (json actor_Json : actors)
 			{
-				dataActors << actor.dump();
+				dataActors << actor_Json.dump();
 			}
 
 			dataActors.close();
@@ -499,17 +504,17 @@ void RABIDS::scheduleStatusUpdate()
 		switch (status)
 		{
 		case ServerStatus::OFF:
-			this->updateStatus(configuration->ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->TextMessages.ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
 			break;
 		case ServerStatus::READY:
-			this->updateStatus(configuration->ReadyMessage() + std::to_string(numberOfPlayers), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->TextMessages.ReadyMessage() + std::to_string(numberOfPlayers), 0, SleepyDiscord::Status::online, false);
 			break;
 		case ServerStatus::DBUPDATE:
 		LOG(info)<<"Stop Server";
 			stopServer();
 			updatingDB = true;
 		LOG(info)<<"Update Status";
-			this->updateStatus(configuration->DbUpdateMessage(), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->TextMessages.DbUpdateMessage(), 0, SleepyDiscord::Status::online, false);
 		LOG(info)<<"updateLocalDBInstance";
 			updateLocalDBInstance();
 		LOG(info)<<"updateDB";
@@ -598,7 +603,7 @@ void RABIDS::startClient(config externalConfig)
 	this->schedule([this]()
 				   {
 						   LOG(info) << "Schedule Status Update";
-			this->updateStatus(configuration->ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->TextMessages.ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
 			this->scheduleStatusUpdate(); },
 				   500);
 	this->schedule([this]()
@@ -678,7 +683,7 @@ void RABIDS::scheduleRestart()
 
 	if (numberOfPlayers == 0)
 	{
-		sendMessage(configuration->AlertChannelId(), configuration->AlertMessage());
+		sendMessage(configuration->AlertChannelId(), configuration->TextMessages.AlertMessage());
 		this->schedule([this]()
 					   {
 		try
