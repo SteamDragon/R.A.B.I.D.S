@@ -117,7 +117,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	if (message.startsWith("version"))
 	{
 		LOG(info) << "Version Called for " << message.author.username;
-		std::string fullMessage = configuration->BotVersionString().append(configuration->Version);
+		std::string fullMessage = configuration->BotVersionString() + configuration->Version;
 		sendMessage(message.channelID, fullMessage);
 		return;
 	}
