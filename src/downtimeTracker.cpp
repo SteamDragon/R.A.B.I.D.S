@@ -115,7 +115,7 @@ void downtimeTracker::AddDowntimes(std::vector<std::string> notAddDowntimeList, 
             return a;
         }
 
-        return std::move(a) + "\" AND DiscordID <> \"" + b;
+        return std::move(a) + "\" AND DiscordID <> \"" + std::string(b);
     };
 
     LOG(info) << std::accumulate(std::next(notAddDowntimeList.begin()), notAddDowntimeList.end(),
@@ -183,7 +183,7 @@ Records downtimeTracker::GetAll()
 
 Record downtimeTracker::GetRecord(std::string_view discordId)
 {
-    auto sql = std::string("select * from downtime  where DiscordID  = \"") + discordId + "\"";
+    auto sql = std::string("select * from downtime  where DiscordID  = \"") + std::string(discordId) + "\"";
     return select_stmt(sql.c_str()).front();
 }
 
