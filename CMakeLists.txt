@@ -55,7 +55,7 @@ if (WIN32)
 endif()
 
 find_package(OpenSSL REQUIRED)
-add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp" "src/downtimeTracker.cpp" "src/rabids.cpp" "src/sqlite3.c")
+add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp" "src/config/messages.cpp" "src/downtimeTracker.cpp" "src/rabids.cpp" "src/sqlite3.c")
 add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} OpenSSL::SSL)
 target_link_libraries(${PROJECT_NAME} sleepy-discord)
