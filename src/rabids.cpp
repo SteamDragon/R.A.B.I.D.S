@@ -498,13 +498,13 @@ void RABIDS::scheduleStatusUpdate()
 		ServerStatus status = checkServerStatus();
 		switch (status)
 		{
-		case OFF:
+		case ServerStatus::OFF:
 			this->updateStatus(configuration->ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
 			break;
-		case READY:
+		case ServerStatus::READY:
 			this->updateStatus(configuration->ReadyMessage() + std::to_string(numberOfPlayers), 0, SleepyDiscord::Status::online, false);
 			break;
-		case DBUPDATE:
+		case ServerStatus::DBUPDATE:
 		LOG(info)<<"Stop Server";
 			stopServer();
 			updatingDB = true;
