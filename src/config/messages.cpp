@@ -1,21 +1,16 @@
 #include "messages.h"
 
-Messages::Messages()
-{
-}
-
-Messages::Messages(messagesTemplate messageTemplate)
-{
-    alertMessage = messageTemplate.alertMessage;
-    serverOffMessage = messageTemplate.serverOffMessage;
-    dbUpdateMessage= messageTemplate.dbUpdateMessage;
-    serverStartedMessage = messageTemplate.serverStartedMessage;
-    serverFailedToStartMessage= messageTemplate.serverFailedToStartMessage;
-    serverStoppedMessage = messageTemplate.serverStoppedMessage;
-    serverFailedToStopMessage = messageTemplate.serverFailedToStopMessage;
-    readyMessage = messageTemplate.readyMessage;
-    helpMessage = messageTemplate.helpMessage;
-    setRestartTimeoutFailedMessage = messageTemplate.setRestartTimeoutFailedMessage;
+Messages::Messages(messagesTemplate& messageTemplate) : alertMessage(messageTemplate.alertMessage),
+serverOffMessage(messageTemplate.serverOffMessage),
+dbUpdateMessage(messageTemplate.dbUpdateMessage),
+serverStartedMessage(messageTemplate.serverStartedMessage),
+serverFailedToStartMessage(messageTemplate.serverFailedToStartMessage),
+serverStoppedMessage(messageTemplate.serverStoppedMessage),
+serverFailedToStopMessage(messageTemplate.serverFailedToStopMessage),
+readyMessage(messageTemplate.readyMessage),
+helpMessage(messageTemplate.helpMessage),
+setRestartTimeoutFailedMessage(messageTemplate.setRestartTimeoutFailedMessage)
+{    
 }
 
 std::string Messages::AlertMessage()

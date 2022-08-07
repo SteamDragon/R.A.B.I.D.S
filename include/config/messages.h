@@ -18,8 +18,8 @@ struct messagesTemplate
 class Messages
 {
 public:
-    Messages();
-	Messages(messagesTemplate messageTemplate);
+    Messages() = default;
+    explicit Messages(messagesTemplate& messageTemplate);
 	std::string AlertMessage();
     std::string ServerOffMessage();
     std::string DbUpdateMessage();
