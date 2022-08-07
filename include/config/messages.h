@@ -21,17 +21,17 @@ class Messages
 public:
     Messages() = default;
     explicit Messages(const messagesTemplate& messageTemplate);
-	const std::string AlertMessage();
-	const std::string BotVersionString();
-    const std::string ServerOffMessage();
-    const std::string DbUpdateMessage();
-    const std::string ServerStartedMessage();
-    const std::string ServerFailedToStartMessage();
-    const std::string ServerStoppedMessage();
-    const std::string ServerFailedToStopMessage();
-    const std::string ReadyMessage(); 
-    const std::string HelpMessage();
-    const std::string SetRestartTimeoutFailedMessage();
+	std::string AlertMessage() const;
+	std::string BotVersionString() const;
+    std::string ServerOffMessage() const;
+    std::string DbUpdateMessage() const;
+    std::string ServerStartedMessage() const;
+    std::string ServerFailedToStartMessage() const;
+    std::string ServerStoppedMessage() const;
+    std::string ServerFailedToStopMessage() const;
+    std::string ReadyMessage() const; 
+    std::string HelpMessage() const;
+    std::string SetRestartTimeoutFailedMessage() const;
 
 private:
     std::string alertMessage;

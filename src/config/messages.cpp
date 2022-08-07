@@ -14,58 +14,58 @@ botVersionMessage(messageTemplate.botVersionString)
 {    
 }
 
-const std::string Messages::AlertMessage()
+std::string Messages::AlertMessage() const
 {
     return alertMessage;
 }
 
-const std::string Messages::ServerOffMessage()
+std::string Messages::ServerOffMessage() const
 {
     return serverOffMessage;
 }
 
-const std::string Messages::DbUpdateMessage()
+std::string Messages::DbUpdateMessage() const
 {
     return dbUpdateMessage;
 }
 
-const std::string Messages::ServerStartedMessage()
+std::string Messages::ServerStartedMessage() const
 {
     return serverStartedMessage;
 }
 
-const std::string Messages::ServerFailedToStartMessage()
+std::string Messages::ServerFailedToStartMessage() const
 {
     return serverFailedToStartMessage;
 }
 
-const std::string Messages::ServerStoppedMessage()
+std::string Messages::ServerStoppedMessage() const
 {
     return serverStoppedMessage;
 }
 
-const std::string Messages::ServerFailedToStopMessage()
+std::string Messages::ServerFailedToStopMessage() const
 {
     return serverFailedToStopMessage;
 }
 
-const std::string Messages::ReadyMessage()
+std::string Messages::ReadyMessage() const
 {
     return readyMessage;
 }
 
-const std::string Messages::HelpMessage()
+std::string Messages::HelpMessage() const
 {
     return helpMessage;
 }
 
-const std::string Messages::SetRestartTimeoutFailedMessage()
+std::string Messages::SetRestartTimeoutFailedMessage() const
 {
     return setRestartTimeoutFailedMessage;
 }
 
 
-const std::string Messages::BotVersionString()
+std::string Messages::BotVersionString() const
 {
     return botVersionMessage;
 }

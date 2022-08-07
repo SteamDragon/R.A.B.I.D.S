@@ -49,7 +49,7 @@ config::config(std::string configPath): _configPath(std::move(configPath)) {
 	LOG(info) << "Configuration storage load: Done";
 }
 
-std::string config::getVersion()
+std::string config::getVersion() const
 {
     return version;
 }
@@ -176,7 +176,7 @@ void config::SetRestartInterval(long long newRestartInterval)
 
 
     
-Messages config::GetTextMessages()
+Messages config::GetTextMessages() const
 {
 	return textMessages;
 }

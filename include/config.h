@@ -14,7 +14,7 @@ class config
 public:
     explicit config(std::string configPath);
     std::string configPath();
-    std::string getVersion();
+    std::string getVersion() const;
     std::string DBFolder();
     std::string TempFolder();
     std::string UsersDatabaseName();
@@ -38,14 +38,14 @@ public:
 
     std::vector<std::string> ApplicationAndArguments();
 
-    Messages GetTextMessages();
+    Messages GetTextMessages()  const;
 
     long long RestartInterval() const;
     void SetRestartInterval(long long newRestartInterval);
     long long AlertInterval() const;
 
 private:
-    const std::string version = "0.2.3";
+    const std::string version = "0.2.4";
     json jsonConfig;
     std::string _configPath;
     std::string helpMessage;
