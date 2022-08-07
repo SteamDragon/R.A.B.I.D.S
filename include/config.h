@@ -13,7 +13,6 @@ class config
 {
 public:
     explicit config(std::string configPath);
-    std::string configPath();
     std::string getVersion() const;
     std::string DBFolder();
     std::string TempFolder();
@@ -33,7 +32,7 @@ public:
     std::string GeneralError();
     std::string DowntimeError();
     std::string ReadManualError();
-    std::string GetConfigPath();
+    std::string GetConfigPath() const;
     
 
     std::vector<std::string> ApplicationAndArguments();

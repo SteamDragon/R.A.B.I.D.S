@@ -129,7 +129,7 @@ std::string config::RestartTimeoutTemplate()
     return restartTimeoutTemplate;
 }
 
-std::string config::GetConfigPath()
+std::string config::GetConfigPath() const
 {
     return _configPath;
 }

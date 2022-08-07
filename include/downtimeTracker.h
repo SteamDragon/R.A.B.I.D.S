@@ -21,8 +21,8 @@ public:
     std::string FormTable();
     std::string GetDate();
     void UpdateDate(int daysToAdd);
-    std::string GetLastHealList();
-    std::string GetLastCryoList();
+    std::string GetLastHealList() const;
+    std::string GetLastCryoList() const;
 
 private:
     std::string LastHealList;

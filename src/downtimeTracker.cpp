@@ -68,12 +68,12 @@ std::string downtimeTracker::GetDate()
     return select_stmt(sql.c_str()).front().front();
 }
 
-std::string downtimeTracker::GetLastHealList()
+std::string downtimeTracker::GetLastHealList() const
 {
     return LastHealList;
 }
 
-std::string downtimeTracker::GetLastCryoList()
+std::string downtimeTracker::GetLastCryoList() const
 {
     return LastCryoList;
 }
