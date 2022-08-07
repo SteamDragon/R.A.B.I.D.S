@@ -12,13 +12,9 @@ using json = nlohmann::json;
 class config
 {
 public:
-    config(std::string configPath);
-    config(config& config);
-    config();
-    ~config();
-    const std::string Version = "0.2.3";
-    std::string config_path_;
-    std::string BotVersionString();
+    explicit config(std::string configPath);
+    std::string configPath();
+    std::string getVersion();
     std::string DBFolder();
     std::string TempFolder();
     std::string UsersDatabaseName();
@@ -38,18 +34,20 @@ public:
     std::string DowntimeError();
     std::string ReadManualError();
     std::string GetConfigPath();
+    
 
     std::vector<std::string> ApplicationAndArguments();
-    Messages TextMessages;
+
+    Messages GetTextMessages();
 
     long long RestartInterval() const;
     void SetRestartInterval(long long newRestartInterval);
     long long AlertInterval() const;
 
 private:
+    const std::string version = "0.2.3";
     json jsonConfig;
     std::string _configPath;
-
     std::string helpMessage;
     std::string serverOffMessage;
     std::string dbUpdateMessage;
@@ -83,4 +81,6 @@ private:
 
     long long restartInterval;
     long long alertInterval;
+    
+    Messages textMessages;
 };

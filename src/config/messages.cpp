@@ -9,7 +9,8 @@ serverStoppedMessage(messageTemplate.serverStoppedMessage),
 serverFailedToStopMessage(messageTemplate.serverFailedToStopMessage),
 readyMessage(messageTemplate.readyMessage),
 helpMessage(messageTemplate.helpMessage),
-setRestartTimeoutFailedMessage(messageTemplate.setRestartTimeoutFailedMessage)
+setRestartTimeoutFailedMessage(messageTemplate.setRestartTimeoutFailedMessage),
+botVersionMessage(messageTemplate.botVersionString)
 {    
 }
 
@@ -61,4 +62,10 @@ const std::string Messages::HelpMessage()
 const std::string Messages::SetRestartTimeoutFailedMessage()
 {
     return setRestartTimeoutFailedMessage;
+}
+
+
+const std::string Messages::BotVersionString()
+{
+    return botVersionMessage;
 }

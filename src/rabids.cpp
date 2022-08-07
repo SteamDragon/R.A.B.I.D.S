@@ -115,14 +115,14 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	if (message.startsWith("help"))
 	{
 		LOG(info) << "Help Called for " << message.author.username;
-		sendMessage(message.channelID, configuration->TextMessages.HelpMessage());
+		sendMessage(message.channelID, configuration->GetTextMessages().HelpMessage());
 		return;
 	}
 
 	if (message.startsWith("version"))
 	{
 		LOG(info) << "Version Called for " << message.author.username;
-		std::string fullMessage = configuration->BotVersionString() + configuration->Version;
+		std::string fullMessage = configuration->GetTextMessages().BotVersionString() + configuration->getVersion();
 		sendMessage(message.channelID, fullMessage);
 		return;
 	}
@@ -131,13 +131,13 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	{
 		if (startServer())
 		{
-			LOG(info) << configuration->TextMessages.ServerStartedMessage();
-			sendMessage(message.channelID, configuration->TextMessages.ServerStartedMessage());
+			LOG(info) << configuration->GetTextMessages().ServerStartedMessage();
+			sendMessage(message.channelID, configuration->GetTextMessages().ServerStartedMessage());
 		}
 		else
 		{
-			LOG(error) << configuration->TextMessages.ServerFailedToStartMessage();
-			sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStartMessage());
+			LOG(error) << configuration->GetTextMessages().ServerFailedToStartMessage();
+			sendMessage(message.channelID, configuration->GetTextMessages().ServerFailedToStartMessage());
 		}
 
 		return;
@@ -147,13 +147,13 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	{
 		if (stopServer())
 		{
-			LOG(info) << configuration->TextMessages.ServerStoppedMessage();
-			sendMessage(message.channelID, configuration->TextMessages.ServerStoppedMessage());
+			LOG(info) << configuration->GetTextMessages().ServerStoppedMessage();
+			sendMessage(message.channelID, configuration->GetTextMessages().ServerStoppedMessage());
 		}
 		else
 		{
-			LOG(error) << configuration->TextMessages.ServerFailedToStopMessage();
-			sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStopMessage());
+			LOG(error) << configuration->GetTextMessages().ServerFailedToStopMessage();
+			sendMessage(message.channelID, configuration->GetTextMessages().ServerFailedToStopMessage());
 		}
 
 		return;
@@ -172,8 +172,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		}
 		catch (...)
 		{
-			LOG(error) << configuration->TextMessages.SetRestartTimeoutFailedMessage();
-			sendMessage(message.channelID, configuration->TextMessages.SetRestartTimeoutFailedMessage());
+			LOG(error) << configuration->GetTextMessages().SetRestartTimeoutFailedMessage();
+			sendMessage(message.channelID, configuration->GetTextMessages().SetRestartTimeoutFailedMessage());
 		}
 
 		return;
@@ -183,24 +183,24 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	{
 		if (stopServer())
 		{
-			LOG(info) << configuration->TextMessages.ServerStoppedMessage();
-			sendMessage(message.channelID, configuration->TextMessages.ServerStoppedMessage());
+			LOG(info) << configuration->GetTextMessages().ServerStoppedMessage();
+			sendMessage(message.channelID, configuration->GetTextMessages().ServerStoppedMessage());
 
 			if (startServer())
 			{
-				LOG(info) << configuration->TextMessages.ServerStartedMessage();
-				sendMessage(message.channelID, configuration->TextMessages.ServerStartedMessage());
+				LOG(info) << configuration->GetTextMessages().ServerStartedMessage();
+				sendMessage(message.channelID, configuration->GetTextMessages().ServerStartedMessage());
 			}
 			else
 			{
-				LOG(error) << configuration->TextMessages.ServerFailedToStartMessage();
-				sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStartMessage());
+				LOG(error) << configuration->GetTextMessages().ServerFailedToStartMessage();
+				sendMessage(message.channelID, configuration->GetTextMessages().ServerFailedToStartMessage());
 			}
 		}
 		else
 		{
-			LOG(error) << configuration->TextMessages.ServerFailedToStopMessage();
-			sendMessage(message.channelID, configuration->TextMessages.ServerFailedToStopMessage());
+			LOG(error) << configuration->GetTextMessages().ServerFailedToStopMessage();
+			sendMessage(message.channelID, configuration->GetTextMessages().ServerFailedToStopMessage());
 		}
 
 		return;
@@ -507,17 +507,17 @@ void RABIDS::scheduleStatusUpdate()
 		switch (status)
 		{
 		case ServerStatus::OFF:
-			this->updateStatus(configuration->TextMessages.ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->GetTextMessages().ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
 			break;
 		case ServerStatus::READY:
-			this->updateStatus(configuration->TextMessages.ReadyMessage() + std::to_string(numberOfPlayers), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->GetTextMessages().ReadyMessage() + std::to_string(numberOfPlayers), 0, SleepyDiscord::Status::online, false);
 			break;
 		case ServerStatus::DBUPDATE:
 		LOG(info)<<"Stop Server";
 			stopServer();
 			updatingDB = true;
 		LOG(info)<<"Update Status";
-			this->updateStatus(configuration->TextMessages.DbUpdateMessage(), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->GetTextMessages().DbUpdateMessage(), 0, SleepyDiscord::Status::online, false);
 		LOG(info)<<"updateLocalDBInstance";
 			updateLocalDBInstance();
 		LOG(info)<<"updateDB";
@@ -606,7 +606,7 @@ void RABIDS::startClient(config externalConfig)
 	this->schedule([this]()
 				   {
 						   LOG(info) << "Schedule Status Update";
-			this->updateStatus(configuration->TextMessages.ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
+			this->updateStatus(configuration->GetTextMessages().ServerOffMessage(), 0, SleepyDiscord::Status::online, false);
 			this->scheduleStatusUpdate(); },
 				   500);
 	this->schedule([this]()
@@ -686,7 +686,7 @@ void RABIDS::scheduleRestart()
 
 	if (numberOfPlayers == 0)
 	{
-		sendMessage(configuration->AlertChannelId(), configuration->TextMessages.AlertMessage());
+		sendMessage(configuration->AlertChannelId(), configuration->GetTextMessages().AlertMessage());
 		this->schedule([this]()
 					   {
 		try

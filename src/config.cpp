@@ -1,6 +1,6 @@
 #include "config.h"
 
-config::config(std::string configPath): config_path_(std::move(configPath)) {
+config::config(std::string configPath): _configPath(std::move(configPath)) {
 	std::string config;
 	std::string line;
 	std::ifstream input(_configPath);
@@ -15,6 +15,7 @@ config::config(std::string configPath): config_path_(std::move(configPath)) {
 	LOG(info) << "Configuration storage load";
 	restartInterval = jsonConfig["RestartInterval"];
 	alertInterval = jsonConfig["AlertInterval"];
+	template_.botVersionString = jsonConfig["BotVersionString"];
 	template_.helpMessage = jsonConfig["HelpMessage"];
 	template_.serverOffMessage = jsonConfig["ServerOffMessage"];
 	template_.dbUpdateMessage = jsonConfig["DBUpdateMessage"];
@@ -44,26 +45,13 @@ config::config(std::string configPath): config_path_(std::move(configPath)) {
 	downtimeError = jsonConfig["DowntimeError"];
 	readManualError = jsonConfig["ReadManualError"];
 	applicationAndArguments = jsonConfig["ApplicationAndArguments"].get<std::vector<std::string>>();
-	TextMessages = Messages(template_);
+	textMessages = Messages(template_);
 	LOG(info) << "Configuration storage load: Done";
 }
 
-config::~config()
+std::string config::getVersion()
 {
-    std::ofstream output(_configPath);
-    output << std::setw(4) << jsonConfig << std::endl;
-}
-
-config::config() : config("config.cfg")
-{}
-
-config::config(config& others) : config(others.GetConfigPath())
-{  
-}
-
-std::string config::BotVersionString()
-{
-    return botVersionString;
+    return version;
 }
 
 std::string config::DBFolder()
@@ -180,4 +168,15 @@ void config::SetRestartInterval(long long newRestartInterval)
 {
     jsonConfig["RestartInterval"] = newRestartInterval;
     restartInterval = newRestartInterval;
+	
+    std::ofstream output(_configPath);
+    output << std::setw(4) << jsonConfig << std::endl;
+	output.close();
+}
+
+
+    
+Messages config::GetTextMessages()
+{
+	return textMessages;
 }

@@ -13,6 +13,7 @@ struct messagesTemplate
     std::string readyMessage;
     std::string helpMessage;
     std::string setRestartTimeoutFailedMessage;
+    std::string botVersionString;
 };
 
 class Messages
@@ -21,6 +22,7 @@ public:
     Messages() = default;
     explicit Messages(const messagesTemplate& messageTemplate);
 	const std::string AlertMessage();
+	const std::string BotVersionString();
     const std::string ServerOffMessage();
     const std::string DbUpdateMessage();
     const std::string ServerStartedMessage();
@@ -42,4 +44,5 @@ private:
     std::string readyMessage;
     std::string helpMessage;
     std::string setRestartTimeoutFailedMessage;
+    std::string botVersionMessage;
 };
