@@ -20,16 +20,16 @@ class Messages
 public:
     Messages() = default;
     explicit Messages(const messagesTemplate& messageTemplate);
-	std::string AlertMessage();
-    std::string ServerOffMessage();
-    std::string DbUpdateMessage();
-    std::string ServerStartedMessage();
-    std::string ServerFailedToStartMessage();
-    std::string ServerStoppedMessage();
-    std::string ServerFailedToStopMessage();
-    std::string ReadyMessage(); 
-    std::string HelpMessage();
-    std::string SetRestartTimeoutFailedMessage();
+	const std::string AlertMessage();
+    const std::string ServerOffMessage();
+    const std::string DbUpdateMessage();
+    const std::string ServerStartedMessage();
+    const std::string ServerFailedToStartMessage();
+    const std::string ServerStoppedMessage();
+    const std::string ServerFailedToStopMessage();
+    const std::string ReadyMessage(); 
+    const std::string HelpMessage();
+    const std::string SetRestartTimeoutFailedMessage();
 
 private:
     std::string alertMessage;
