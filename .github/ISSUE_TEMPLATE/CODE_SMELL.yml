@@ -1,0 +1,24 @@
+name: "💩CODE SMELL"
+description: Create a new ticket for a new code smell issue
+title: "💩 [CODE SMELL] - <title>"
+assignees: SteamDragon
+labels: [
+  "code smell"
+]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      description: Provide a brief explanation of the problem
+      placeholder: 
+    validations:
+      required: true
+  - type: textarea
+    id: smelly_function
+    attributes:
+      label: "Smelly function"
+      description: Place in code where smell is occured
+      placeholder: 
+    validations:
+      required: true
