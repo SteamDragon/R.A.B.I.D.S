@@ -25,7 +25,7 @@ int main()
 	init();
 	config autoConfig("config.cfg");
 	LOG(info) << "Roving Autonomous Bartmoss Interface Drone V2 Initialized";
-	LOG(info) << "Version " << autoConfig.Version;
+	LOG(info) << "Version " << autoConfig.getVersion();
 	RABIDS client(autoConfig.Token(), SleepyDiscord::USER_CONTROLED_THREADS);
 	client.setIntents(SleepyDiscord::Intent::SERVER_MESSAGES, SleepyDiscord::Intent::DIRECT_MESSAGES, SleepyDiscord::Intent::SERVER_INTEGRATIONS, SleepyDiscord::Intent::SERVERS);
 	client.startClient(autoConfig);

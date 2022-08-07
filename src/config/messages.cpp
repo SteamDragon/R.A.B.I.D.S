@@ -9,56 +9,63 @@ serverStoppedMessage(messageTemplate.serverStoppedMessage),
 serverFailedToStopMessage(messageTemplate.serverFailedToStopMessage),
 readyMessage(messageTemplate.readyMessage),
 helpMessage(messageTemplate.helpMessage),
-setRestartTimeoutFailedMessage(messageTemplate.setRestartTimeoutFailedMessage)
+setRestartTimeoutFailedMessage(messageTemplate.setRestartTimeoutFailedMessage),
+botVersionMessage(messageTemplate.botVersionString)
 {    
 }
 
-std::string Messages::AlertMessage()
+std::string Messages::AlertMessage() const
 {
     return alertMessage;
 }
 
-std::string Messages::ServerOffMessage()
+std::string Messages::ServerOffMessage() const
 {
     return serverOffMessage;
 }
 
-std::string Messages::DbUpdateMessage()
+std::string Messages::DbUpdateMessage() const
 {
     return dbUpdateMessage;
 }
 
-std::string Messages::ServerStartedMessage()
+std::string Messages::ServerStartedMessage() const
 {
     return serverStartedMessage;
 }
 
-std::string Messages::ServerFailedToStartMessage()
+std::string Messages::ServerFailedToStartMessage() const
 {
     return serverFailedToStartMessage;
 }
 
-std::string Messages::ServerStoppedMessage()
+std::string Messages::ServerStoppedMessage() const
 {
     return serverStoppedMessage;
 }
 
-std::string Messages::ServerFailedToStopMessage()
+std::string Messages::ServerFailedToStopMessage() const
 {
     return serverFailedToStopMessage;
 }
 
-std::string Messages::ReadyMessage()
+std::string Messages::ReadyMessage() const
 {
     return readyMessage;
 }
 
-std::string Messages::HelpMessage()
+std::string Messages::HelpMessage() const
 {
     return helpMessage;
 }
 
-std::string Messages::SetRestartTimeoutFailedMessage()
+std::string Messages::SetRestartTimeoutFailedMessage() const
 {
     return setRestartTimeoutFailedMessage;
+}
+
+
+std::string Messages::BotVersionString() const
+{
+    return botVersionMessage;
 }
