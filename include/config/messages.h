@@ -19,7 +19,7 @@ class Messages
 {
 public:
     Messages() = default;
-    explicit Messages(messagesTemplate& messageTemplate);
+    explicit Messages(const messagesTemplate& messageTemplate);
 	std::string AlertMessage();
     std::string ServerOffMessage();
     std::string DbUpdateMessage();

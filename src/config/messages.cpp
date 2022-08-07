@@ -1,6 +1,6 @@
 #include "messages.h"
 
-Messages::Messages(messagesTemplate& messageTemplate) : alertMessage(messageTemplate.alertMessage),
+Messages::Messages(const messagesTemplate& messageTemplate) : alertMessage(messageTemplate.alertMessage),
 serverOffMessage(messageTemplate.serverOffMessage),
 dbUpdateMessage(messageTemplate.dbUpdateMessage),
 serverStartedMessage(messageTemplate.serverStartedMessage),
