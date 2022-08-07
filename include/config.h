@@ -14,28 +14,28 @@ class config
 public:
     explicit config(std::string configPath);
     std::string getVersion() const;
-    std::string DBFolder();
-    std::string TempFolder();
-    std::string UsersDatabaseName();
-    std::string ActorsDatabaseName();
-    std::string LocalUserDB();
-    std::string LocalActorDB();
-    std::string PlayerCountFile();
-    std::string ChannelId();
-    std::string AlertChannelId();
-    std::string TimedRegistrationString();
-    std::string SucceedRegistrationString();
-    std::string UserTemplate();
-    std::string Token();
-    std::string ActorTemplate();
-    std::string RestartTimeoutTemplate();
-    std::string GeneralError();
-    std::string DowntimeError();
-    std::string ReadManualError();
+    std::string DBFolder() const;
+    std::string TempFolder() const;
+    std::string UsersDatabaseName() const;
+    std::string ActorsDatabaseName() const;
+    std::string LocalUserDB() const;
+    std::string LocalActorDB() const;
+    std::string PlayerCountFile() const;
+    std::string ChannelId() const;
+    std::string AlertChannelId() const;
+    std::string TimedRegistrationString() const;
+    std::string SucceedRegistrationString() const;
+    std::string UserTemplate() const;
+    std::string Token() const;
+    std::string ActorTemplate() const;
+    std::string RestartTimeoutTemplate() const;
+    std::string GeneralError() const;
+    std::string DowntimeError() const;
+    std::string ReadManualError() const;
     std::string GetConfigPath() const;
     
 
-    std::vector<std::string> ApplicationAndArguments();
+    std::vector<std::string> ApplicationAndArguments() const;
 
     Messages GetTextMessages()  const;
 

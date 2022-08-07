@@ -54,77 +54,77 @@ std::string config::getVersion() const
     return version;
 }
 
-std::string config::DBFolder()
+std::string config::DBFolder() const
 {
     return dBFolder;
 }
 
-std::string config::TempFolder()
+std::string config::TempFolder() const
 {
     return tempFolder;
 }
 
-std::string config::UsersDatabaseName()
+std::string config::UsersDatabaseName() const
 {
     return usersDatabaseName;
 }
 
-std::string config::ActorsDatabaseName()
+std::string config::ActorsDatabaseName() const
 {
     return actorsDatabaseName;
 }
 
-std::string config::LocalUserDB()
+std::string config::LocalUserDB() const
 {
     return localUserDB;
 }
 
-std::string config::LocalActorDB()
+std::string config::LocalActorDB() const
 {
     return localActorDB;
 }
 
-std::string config::PlayerCountFile()
+std::string config::PlayerCountFile() const
 {
     return playerCountFile;
 }
 
-std::string config::ChannelId()
+std::string config::ChannelId() const
 {
     return channelId;
 }
 
-std::string config::AlertChannelId()
+std::string config::AlertChannelId() const
 {
     return alertChannelId;
 }
 
-std::string config::TimedRegistrationString()
+std::string config::TimedRegistrationString() const
 {
     return timedRegistrationString;
 }
 
-std::string config::SucceedRegistrationString()
+std::string config::SucceedRegistrationString() const
 {
     return succeedRegistrationString;
 }
 
-std::string config::UserTemplate()
+std::string config::UserTemplate() const
 {
     return userTemplate;
 }
 
-std::string config::Token()
+std::string config::Token() const
 {
     return token;
 }
 
-std::string config::ActorTemplate()
+std::string config::ActorTemplate() const
 {
     return actorTemplate;
 }
 
-std::string config::RestartTimeoutTemplate()
+std::string config::RestartTimeoutTemplate() const
 {
     return restartTimeoutTemplate;
 }
@@ -134,22 +134,22 @@ std::string config::GetConfigPath() const
     return _configPath;
 }
 
-std::string config::GeneralError()
+std::string config::GeneralError() const
 {
     return generalError;
 }
 
-std::string config::DowntimeError()
+std::string config::DowntimeError() const
 {
     return downtimeError;
 }
 
-std::string config::ReadManualError()
+std::string config::ReadManualError() const
 {
     return readManualError;
 }
 
-std::vector<std::string> config::ApplicationAndArguments()
+std::vector<std::string> config::ApplicationAndArguments() const
 {
     return applicationAndArguments;
 }
