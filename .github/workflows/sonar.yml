@@ -2,7 +2,9 @@ name: Call Sonar
 
 on:  
   push:
-    branches: [ "develop" ]
+    branches: '*'
+  pull_request:
+      types: [opened]
   workflow_dispatch:
 
 env:

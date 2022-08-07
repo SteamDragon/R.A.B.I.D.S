@@ -1,9 +1,12 @@
 name: Release
 
-on:
+on:    
+  pull_request:
+      types: [opened]
   push:
     branches: 
       - '*'
+
     tags:
       - "v**.**.**"
   workflow_dispatch:
