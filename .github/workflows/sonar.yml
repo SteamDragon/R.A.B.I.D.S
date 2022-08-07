@@ -3,6 +3,8 @@ name: Call Sonar
 on:  
   push:
     branches: '*'
+  pull_request:
+      types: [opened]
   workflow_dispatch:
 
 env:
