@@ -26,6 +26,12 @@ make
 ```
 
 # Changelog:
+## 0.2.4
+
+1) Code smell cleanup
+2) small optimisations
+3) increasing maintainability
+
 ## 0.2.3
 
 1. When server is stopped no restart will be performed
