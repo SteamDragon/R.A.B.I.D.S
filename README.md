@@ -7,7 +7,7 @@ Discord Bot for Your Cyberpunk Red Open Table Campain in Foundry VTT
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=SteamDragon_rabids&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=SteamDragon_rabids)
 
 NOTE: For proper working of all functions needed to grab number of users from FVTT (changes to source needed)
-# Dependencies:
+# Dependencies:rf c2v3
 * [Boost](https://www.boost.org/) (Needed to be installed)
 * [OpenSSL](https://www.openssl.org/) (Needed to be installed)
 * [nlohmann::json](https://github.com/nlohmann/json) (Downloading on build)
