@@ -16,7 +16,7 @@ NOTE: For proper working of all functions needed to grab number of users from FV
 * [fmt](https://github.com/fmtlib/fmt) (Downloading on build)
 * [sqlite3](https://www.sqlite.org/) (Already included)
 
-# Build Linux
+# Build Linux31 
 ```sh
 git clone https://github.com/SteamDragon/R.A.B.I.D.S
 mkdir out
