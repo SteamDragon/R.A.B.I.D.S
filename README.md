@@ -1,4 +1,4 @@
-# R.A.B.I.D.S
+# R.A.B.I.D.S qawega
 Discord Bot for Your Cyberpunk Red Open Table Campain in Foundry VTT
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/SteamDragon/R.A.B.I.D.S)
