@@ -177,7 +177,7 @@ void downtimeTracker::ReduceHealing(std::string_view discordId, int numberOfDays
     }
 
     auto sql = std::string("Update downtime set Healing=").append(std::to_string(number)).append(", Cryo=").append(std::to_string(cryo)).append(" where DiscordID  = \"").append(discordId).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -253,7 +253,7 @@ void downtimeTracker::AddHealing(std::string_view discordId, int numberOfDaysToH
     int c = std::stoi(record[6]) + cryo;
     int number = std::stoi(record[5]) + numberOfDaysToHeal;
     auto sql = std::string("Update downtime set Healing=").append(std::to_string(number)).append(", Cryo=").append(std::to_string(c)).append(" where DiscordID  = \"").append(discordId).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);    
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);    
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -264,7 +264,7 @@ void downtimeTracker::AddHealing(std::string_view discordId, int numberOfDaysToH
 void downtimeTracker::InsertEntry(std::string_view discordId, std::string_view userName, std::string_view actorName)
 {
     auto sql = std::string("INSERT into downtime (DiscordID, UserName,ActorName) VALUES (\"").append(discordId).append("\",\"").append(userName).append("\",\"").append(actorName).append("\");");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, 0, &zErrMsg);
+    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
     if (rc != SQLITE_OK)
     {
         std::cerr << "SQL error: " << zErrMsg;
@@ -272,11 +272,4 @@ void downtimeTracker::InsertEntry(std::string_view discordId, std::string_view u
     }
 }
 
-downTimeEntry::downTimeEntry(std::string_view userName, std::string_view actorName, int downtimeDays, int healing, int cryo)
-{
-    UserName = userName;
-    ActorName = actorName;
-    DowntimeDays = downtimeDays;
-    Healing = healing;
-    Cryo = cryo;
-}
+downTimeEntry::downTimeEntry(std::string_view userName, std::string_view actorName, int downtimeDays, int healing, int cryo) : UserName(userName), ActorName(actorName), DowntimeDays(downtimeDays), Healing(healing), Cryo(cryo) {}
