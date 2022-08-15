@@ -37,3 +37,13 @@ out/*
 build/
 .vscode/
 /.sonarlint
+_deps/
+CMakeFiles/
+cpr-build/
+cpr-download/
+lib/
+asio-*/
+websocketpp-*/
+CmakeCache.txt
+*.cmake
+Makefile

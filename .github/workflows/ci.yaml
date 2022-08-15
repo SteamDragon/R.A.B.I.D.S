@@ -15,7 +15,10 @@ jobs:
   x64:
     uses: ./.github/workflows/x64.yml
 
+  sonar:
+    uses: ./.github/workflows/sonar.yml
+
   release:
-    needs: [x64]
+    needs: [x64, sonar]
     if: startsWith(github.ref, 'refs/tags/v')
     uses: ./.github/workflows/release.yaml

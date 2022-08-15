@@ -229,7 +229,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		catch (...)
 		{
 			LOG(error) << "Inserting Downtime Failed: " << message.content;
-			sendMessage(message.channelID, configuration->GeneralError());
+			sendMessage(message.channelID, configuration->GetTextMessages().GeneralError());
 		}
 		return;
 	}
@@ -248,7 +248,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		catch (...)
 		{
 			LOG(error) << "Downtime Table Update Failed";
-			sendMessage(message.channelID, configuration->GeneralError());
+			sendMessage(message.channelID, configuration->GetTextMessages().GeneralError());
 		}
 		return;
 	}
@@ -284,7 +284,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		catch (...)
 		{
 			LOG(error) << "Usage of Downtime Failed: " << message.content;
-			sendMessage(message.channelID, configuration->GeneralError());
+			sendMessage(message.channelID, configuration->GetTextMessages().GeneralError());
 		}
 		return;
 	}
@@ -322,7 +322,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		catch (...)
 		{
 			LOG(error) << "Adding of Downtime Failed: " << message.content;
-			sendMessage(message.channelID, configuration->DowntimeError());
+			sendMessage(message.channelID, configuration->GetTextMessages().DowntimeError());
 		}
 		
 		return;
@@ -344,7 +344,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 
 			if (records.size() < 2)
 			{
-				sendMessage(message.channelID, configuration->ReadManualError());
+				sendMessage(message.channelID, configuration->GetTextMessages().ReadManualError());
 			}
 
 			int index = 1;
@@ -381,7 +381,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		catch (...)
 		{
 			LOG(error) << "Heal adding Failed: " << message.content;
-			sendMessage(message.channelID, configuration->DowntimeError());
+			sendMessage(message.channelID, configuration->GetTextMessages().DowntimeError());
 		}
 		return;
 	}
@@ -419,7 +419,7 @@ std::string RABIDS::Register(SleepyDiscord::User user, std::string password)
 		}
 		else
 		{
-			result = configuration->SucceedRegistrationString();
+			result = configuration->GetTextMessages().SucceedRegistrationString();
 		}
 
 		dbChanged = true;

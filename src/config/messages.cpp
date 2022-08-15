@@ -76,7 +76,20 @@ std::string Messages::SucceedRegistrationString() const
     return succeedRegistrationString;
 }
 
-std::string Messages::SetRestartTimeoutFailedMessage() const
+
+std::string Messages::GeneralError() const
 {
-    return setRestartTimeoutFailedMessage;
+    return generalError;
+}
+
+
+std::string Messages::ReadManualError() const
+{
+    return readManualError;
+}
+
+
+std::string Messages::DowntimeError() const
+{
+    return downtimeError;
 }
