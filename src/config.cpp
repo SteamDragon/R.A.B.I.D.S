@@ -41,9 +41,9 @@ config::config(std::string configPath): _configPath(std::move(configPath)) {
 	template_.serverFailedToStopMessage = jsonConfig["ServerFailedToStopMessage"];
 	restartTimeoutTemplate = jsonConfig["RestartTimeoutTemplate"];
 	template_.setRestartTimeoutFailedMessage = jsonConfig["SetRestartTimeoutFailedMessage"];
-	generalError = jsonConfig["GeneralError"];
-	downtimeError = jsonConfig["DowntimeError"];
-	readManualError = jsonConfig["ReadManualError"];
+	template_.generalError = jsonConfig["GeneralError"];
+	template_.downtimeError = jsonConfig["DowntimeError"];
+	template_.readManualError = jsonConfig["ReadManualError"];
 	applicationAndArguments = jsonConfig["ApplicationAndArguments"].get<std::vector<std::string>>();
 	textMessages = Messages(template_);
 	LOG(info) << "Configuration storage load: Done";
@@ -104,11 +104,6 @@ std::string config::TimedRegistrationString() const
     return timedRegistrationString;
 }
 
-std::string config::SucceedRegistrationString() const
-{
-    return succeedRegistrationString;
-}
-
 std::string config::UserTemplate() const
 {
     return userTemplate;
@@ -132,21 +127,6 @@ std::string config::RestartTimeoutTemplate() const
 std::string config::GetConfigPath() const
 {
     return _configPath;
-}
-
-std::string config::GeneralError() const
-{
-    return generalError;
-}
-
-std::string config::DowntimeError() const
-{
-    return downtimeError;
-}
-
-std::string config::ReadManualError() const
-{
-    return readManualError;
 }
 
 std::vector<std::string> config::ApplicationAndArguments() const

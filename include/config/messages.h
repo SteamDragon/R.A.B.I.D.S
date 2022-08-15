@@ -14,6 +14,10 @@ struct messagesTemplate
     std::string helpMessage;
     std::string setRestartTimeoutFailedMessage;
     std::string botVersionString;
+    std::string succeedRegistrationString;
+    std::string generalError;
+    std::string downtimeError;
+    std::string readManualError;
 };
 
 class Messages
@@ -32,7 +36,10 @@ public:
     std::string ReadyMessage() const; 
     std::string HelpMessage() const;
     std::string SucceedRegistrationString() const;
-    std::string SetRestartTimeoutFailedMessage() const;
+    std::string SetRestartTimeoutFailedMessage() const;    
+    std::string GeneralError() const;
+    std::string DowntimeError() const;
+    std::string ReadManualError() const;
 
 
 private:
@@ -47,5 +54,8 @@ private:
     std::string helpMessage;
     std::string setRestartTimeoutFailedMessage;
     std::string botVersionMessage;
-    std::string succeedRegistrationString;
+    std::string succeedRegistrationString;    
+    std::string generalError;
+    std::string downtimeError;
+    std::string readManualError;
 };

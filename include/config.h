@@ -24,14 +24,10 @@ public:
     std::string ChannelId() const;
     std::string AlertChannelId() const;
     std::string TimedRegistrationString() const;
-    std::string SucceedRegistrationString() const;
     std::string UserTemplate() const;
     std::string Token() const;
     std::string ActorTemplate() const;
     std::string RestartTimeoutTemplate() const;
-    std::string GeneralError() const;
-    std::string DowntimeError() const;
-    std::string ReadManualError() const;
     std::string GetConfigPath() const;
     
 
@@ -61,8 +57,7 @@ private:
     std::string token;
     std::string actorTemplate;
     std::string restartTimeoutTemplate;
-    std::string generalError;
-    std::string downtimeError;
+
     std::vector<std::string> applicationAndArguments;
     long long restartInterval;
     long long alertInterval;    
