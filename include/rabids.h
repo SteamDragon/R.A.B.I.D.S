@@ -25,7 +25,7 @@ public:
 	void onInteraction(SleepyDiscord::Interaction interaction) override;
 	void onReady(SleepyDiscord::Ready ready) override;
 	void onFirstConnect();
-	std::string Register(SleepyDiscord::User user, std::string password);
+	std::string Register(SleepyDiscord::User user, const std::string& password);
 
 private:
 	config *configuration;

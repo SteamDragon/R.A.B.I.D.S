@@ -48,7 +48,7 @@ namespace Command
 	static MappedCommands all;
 	static void addCommand(Command command)
 	{
-		all.emplace(command.name, command);
+		all.try_emplace(command.name, command);
 	}
 }
 
@@ -70,16 +70,15 @@ std::string CurrentTime()
 
 void PBKDF2_HMAC_SHA_512(const char *pass, const unsigned char *salt, int32_t iterations, uint32_t outputBytes, char *hexResult)
 {
-	unsigned int i;
 	unsigned char digest[outputBytes];
 	PKCS5_PBKDF2_HMAC(pass, strlen(pass), salt, strlen((char *)salt), iterations, EVP_sha512(), outputBytes, digest);
-	for (i = 0; i < sizeof(digest); i++)
+	for (unsigned int i = 0; i < sizeof(digest); i++)
 	{
 		sprintf(hexResult + (i * 2), "%02x", 255 & digest[i]);
-	};
+	}
 }
 
-std::string random_string(size_t length, std::function<char(void)> rand_char)
+std::string random_string(size_t length, std::function<char(void)> const & rand_char)
 {
 	std::string str(length, 0);
 	std::generate_n(str.begin(), length, rand_char);
@@ -213,7 +212,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			std::string s = message.content.substr(14);
 			std::string username = message.mentions[0].username;
 			std::string actorname = s;
-			int pos = actorname.find("> ");
+			unsigned long pos = actorname.find("> ");
 			actorname.erase(0, pos + 1);
 			trim(username);
 			trim(actorname);
@@ -297,7 +296,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			Record records;
 			std::string delimiter("\n");
 			int number = std::stoi(msg.substr(0, msg.find(delimiter)));
-			for (auto mention : message.mentions)
+			for (const auto& mention : message.mentions)
 			{
 				records.push_back(mention.ID);
 			}
@@ -387,7 +386,7 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 	}
 }
 
-std::string RABIDS::Register(SleepyDiscord::User user, std::string password)
+std::string RABIDS::Register(SleepyDiscord::User user, const std::string& password)
 {
 	std::string result;
 	try
@@ -481,7 +480,7 @@ ServerStatus RABIDS::checkServerStatus()
 	}
 
 	auto v = configuration->ApplicationAndArguments();
-	auto space = [](std::string a, std::string b)
+	auto space = [](std::string a, const std::string& b)
 	{
 		return std::move(a) + ' ' + b;
 	};
