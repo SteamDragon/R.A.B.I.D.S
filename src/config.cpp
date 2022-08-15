@@ -29,7 +29,7 @@ config::config(std::string configPath): _configPath(std::move(configPath)) {
 	channelId = jsonConfig["ChannelId"];
 	alertChannelId = jsonConfig["AlertChannelId"];
 	timedRegistrationString = jsonConfig["TimedRegistrationString"];
-	succeedRegistrationString = jsonConfig["SucceedRegistrationString"];
+	template_.succeedRegistrationString = jsonConfig["SucceedRegistrationString"];
 	userTemplate = jsonConfig["UserTemplate"];
 	token = jsonConfig["Token"];
 	template_.alertMessage = jsonConfig["AlertMessage"];

@@ -31,7 +31,9 @@ public:
     std::string ServerFailedToStopMessage() const;
     std::string ReadyMessage() const; 
     std::string HelpMessage() const;
+    std::string SucceedRegistrationString() const;
     std::string SetRestartTimeoutFailedMessage() const;
+
 
 private:
     std::string alertMessage;
@@ -45,4 +47,5 @@ private:
     std::string helpMessage;
     std::string setRestartTimeoutFailedMessage;
     std::string botVersionMessage;
+    std::string succeedRegistrationString;
 };

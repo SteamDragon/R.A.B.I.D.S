@@ -47,10 +47,6 @@ private:
     const std::string version = "0.2.4";
     json jsonConfig;
     std::string _configPath;
-    std::string helpMessage;
-    std::string serverOffMessage;
-    std::string dbUpdateMessage;
-    std::string botVersionString;
     std::string dBFolder;
     std::string tempFolder;
     std::string usersDatabaseName;
@@ -61,25 +57,14 @@ private:
     std::string channelId;
     std::string alertChannelId;
     std::string timedRegistrationString;
-    std::string succeedRegistrationString;
     std::string userTemplate;
     std::string token;
-    std::string alertMessage;
     std::string actorTemplate;
-    std::string readyMessage;
-    std::string serverStartedMessage;
-    std::string serverFailedToStartMessage;
-    std::string serverStoppedMessage;
-    std::string serverFailedToStopMessage;
     std::string restartTimeoutTemplate;
     std::string generalError;
     std::string downtimeError;
-    std::string readManualError;
-
     std::vector<std::string> applicationAndArguments;
-
     long long restartInterval;
-    long long alertInterval;
-    
+    long long alertInterval;    
     Messages textMessages;
 };

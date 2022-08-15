@@ -69,3 +69,14 @@ std::string Messages::BotVersionString() const
 {
     return botVersionMessage;
 }
+
+
+std::string Messages::SucceedRegistrationString() const
+{
+    return succeedRegistrationString;
+}
+
+std::string Messages::SetRestartTimeoutFailedMessage() const
+{
+    return setRestartTimeoutFailedMessage;
+}
