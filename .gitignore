@@ -46,4 +46,5 @@ asio-*/
 websocketpp-*/
 CmakeCache.txt
 *.cmake
-Makefile
+CMakeCache.txt
+**/Makefile
