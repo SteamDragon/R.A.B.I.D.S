@@ -15,7 +15,7 @@ FetchContent_Declare(sleepydiscord
     GIT_REPOSITORY https://github.com/SteamDragon/sleepy-discord
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
-    GIT_TAG origin/master
+    GIT_TAG origin/develop
 )
 
 FetchContent_Declare(fmt
