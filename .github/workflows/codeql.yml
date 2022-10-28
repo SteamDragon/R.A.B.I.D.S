@@ -52,7 +52,7 @@ jobs:
         # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
     - name: boost
-      run: sudo apt-get install libboost-all-de
+      run: sudo apt-get install libboost-all-dev
     - name: Configure CMake
       run: |
           export CC=/usr/bin/gcc-10
