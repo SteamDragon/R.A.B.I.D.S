@@ -71,6 +71,7 @@ std::string TranslitRusEng(const std::string& str)
             {
                 ret += eng[j];
                 found = true;
+                i++;
                 break;
             }
         }
