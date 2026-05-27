@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <cstring>
 #include <cstdio>
+#include <cctype>
 #include <algorithm>
 #include <openssl/evp.h>
 #include <ctime>
@@ -48,4 +49,55 @@ std::string random_string(size_t length, std::function<char(void)> const& rand_c
     std::string str(length, 0);
     std::generate_n(str.begin(), length, rand_char);
     return str;
+}
+
+std::string TranslitRusEng(const std::string& str)
+{
+    std::vector<std::string> rus = {"А", "а", "Б", "б", "В", "в", "Г", "г", "Ґ", "ґ", "Д", "д", "Е", "е", "Є", "є", "Ж", "ж", "З", "з", "И", "и", "І", "і", "Ї", "ї", "Й", "й", "К", "к",
+                                    "Л", "л", "М", "м", "Н", "н", "О", "о", "П", "п", "Р", "р", "С", "с", "Т", "т", "У", "у", "Ф", "ф", "Х", "х", "Ц", "ц", "Ч", "ч", "Ш", "ш",
+                                    "Щ", "щ", "Ь", "ь", "Ю", "ю", "Я", "я", "Ы", "ы", "Ъ", "ъ", "Ё", "ё", "Э", "э"};
+
+    std::vector<std::string> eng = {"A", "a", "B", "b", "V", "v", "G", "g", "G", "g", "D", "d", "E", "e", "E", "E", "Zh", "zh", "Z", "z", "I", "i", "I", "I", "Yi", "yi", "J", "j", "K", "k",
+                                    "L", "l", "M", "m", "N", "n", "O", "o", "P", "p", "R", "r", "S", "s", "T", "t", "U", "u", "F", "f", "H", "h", "Ts", "ts", "ch", "ch", "Sh", "sh",
+                                    "Shh", "shh", "'", "'", "Yu", "yu", "Ya", "ya", "Y", "y", "", "", "Yo", "yo", "E", "e"};
+    std::string ret;
+
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        bool found = false;
+        for (int j = 0; j < 74; j++)
+        {
+            if (str.substr(i, 2).compare(rus[j]) == 0)
+            {
+                ret += eng[j];
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+            ret += str.substr(i, 1);
+    }
+
+    return ret;
+}
+
+void ltrim(std::string& s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
+                                    { return !std::isspace(ch); }));
+}
+
+void rtrim(std::string& s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
+                         { return !std::isspace(ch); })
+                .base(),
+            s.end());
+}
+
+void trim(std::string& s)
+{
+    ltrim(s);
+    rtrim(s);
 }

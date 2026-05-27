@@ -1,6 +1,7 @@
 const BRIDGE_DIR = 'Data/rabids-bridge';
 const USERS_FILE = 'Data/rabids-bridge/users.json';
 const ACTORS_FILE = 'Data/rabids-bridge/actors.json';
+const PLAYERS_FILE = 'Data/rabids-bridge/players.json';
 const COMMANDS_DIR = 'Data/rabids-bridge/commands';
 const DONE_DIR = 'Data/rabids-bridge/commands/done';
 const CONFIG_FILE = 'Data/rabids-bridge/config.json';
@@ -48,7 +49,6 @@ function exportUsers() {
     _stats: u._stats
   }));
   writeJson(USERS_FILE, users);
-  console.log(`R.A.B.I.D.S Bridge: Exported ${users.length} users`);
 }
 
 function exportActors() {
@@ -71,7 +71,23 @@ function exportActors() {
     _stats: a._stats
   }));
   writeJson(ACTORS_FILE, actors);
-  console.log(`R.A.B.I.D.S Bridge: Exported ${actors.length} actors`);
+}
+
+function exportPlayers() {
+  if (!game?.users) return;
+  const count = game.users.contents.filter(u => u.active).length;
+  writeJson(PLAYERS_FILE, { count });
+}
+
+function loadConfig() {
+  const cfg = readJson(CONFIG_FILE);
+  return cfg || {};
+}
+
+function checkApiKey(cmd, config) {
+  const key = config.apiKey;
+  if (!key) return true;
+  return cmd.apiKey === key;
 }
 
 function processCommands() {
@@ -79,15 +95,21 @@ function processCommands() {
   ensureDir(DONE_DIR);
   if (!fs.existsSync(COMMANDS_DIR)) return;
 
+  const config = loadConfig();
   const files = fs.readdirSync(COMMANDS_DIR).filter(f => f.endsWith('.json'));
   for (const file of files) {
     const cmd = readJson(`${COMMANDS_DIR}/${file}`);
     if (!cmd) continue;
 
+    if (!checkApiKey(cmd, config)) {
+      console.warn(`R.A.B.I.D.S Bridge: Invalid apiKey in ${file}, skipping`);
+      writeJson(`${COMMANDS_DIR}/${file}.error`, { error: 'Invalid apiKey', command: cmd });
+      continue;
+    }
+
     try {
       executeCommand(cmd);
       fs.renameSync(`${COMMANDS_DIR}/${file}`, `${DONE_DIR}/${file}`);
-      console.log(`R.A.B.I.D.S Bridge: Executed command ${cmd.action} from ${file}`);
     } catch (e) {
       console.error(`R.A.B.I.D.S Bridge: Failed command ${file}:`, e);
       writeJson(`${COMMANDS_DIR}/${file}.error`, { error: e.message, command: cmd });
@@ -141,13 +163,16 @@ Hooks.on('ready', () => {
 
   exportUsers();
   exportActors();
+  exportPlayers();
   processCommands();
-  console.log('R.A.B.I.D.S Bridge: Sync complete');
+  setInterval(processCommands, 5000);
+  console.log('R.A.B.I.D.S Bridge: Sync complete, polling every 5s');
 });
 
-Hooks.on('createUser', () => exportUsers());
-Hooks.on('updateUser', () => exportUsers());
-Hooks.on('deleteUser', () => exportUsers());
+Hooks.on('createUser', () => { exportUsers(); exportPlayers(); });
+Hooks.on('updateUser', () => { exportUsers(); exportPlayers(); });
+Hooks.on('deleteUser', () => { exportUsers(); exportPlayers(); });
+Hooks.on('userConnected', () => exportPlayers());
 
 Hooks.on('createActor', () => exportActors());
 Hooks.on('updateActor', () => exportActors());

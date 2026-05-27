@@ -12,6 +12,17 @@ SyncEngine::SyncEngine(std::string bridgeDir, std::string foundryUrl, std::strin
 {
     std::filesystem::create_directories(this->bridgeDir);
     std::filesystem::create_directories(this->bridgeDir + "/commands/done");
+
+    if (!this->apiKey.empty()) {
+        json cfg = {{"apiKey", this->apiKey}};
+        std::string tmp = this->bridgeDir + "/config.tmp";
+        {
+            std::ofstream f(tmp);
+            f << cfg.dump();
+        }
+        std::error_code ec;
+        std::filesystem::rename(tmp, this->bridgeDir + "/config.json", ec);
+    }
 }
 
 json SyncEngine::readJson(const std::string& path) const
@@ -94,14 +105,24 @@ std::string SyncEngine::makeCommandId() const
 
 bool SyncEngine::writeCommand(const SyncCommand& cmd) const
 {
-    std::string path = bridgeDir + "/commands/" + makeCommandId() + ".json";
-    std::ofstream file(path);
-    if (!file.is_open())
-        return false;
+    std::string id = makeCommandId();
+    std::string path = bridgeDir + "/commands/" + id + ".json";
+    std::string tmp = bridgeDir + "/commands/." + id + ".tmp";
 
     json payload = {{"action", cmd.action}, {"data", cmd.data}};
-    file << payload.dump();
-    return true;
+    if (!apiKey.empty())
+        payload["apiKey"] = apiKey;
+    {
+        std::ofstream file(tmp);
+        if (!file.is_open())
+            return false;
+        file << payload.dump();
+        file.close();
+    }
+
+    std::error_code ec;
+    std::filesystem::rename(tmp, path, ec);
+    return !ec;
 }
 
 bool SyncEngine::enqueueRegistration(const std::string& discordId, const std::string& name, const std::string& password)

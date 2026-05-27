@@ -7,11 +7,6 @@
 using Record = std::vector<std::string>;
 using Records = std::vector<Record>;
 
-std::string TranslitRusEng(const std::string& str);
-void ltrim(std::string& s);
-void rtrim(std::string& s);
-void trim(std::string& s);
-
 class downtimeTracker
 {
 public:
