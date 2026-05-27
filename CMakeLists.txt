@@ -32,8 +32,20 @@ if(NOT json_POPULATED)
 endif()
 
 FetchContent_GetProperties(sleepydiscord)
-if(NOT sleepy-discord_POPULATED)
+if(NOT sleepydiscord_POPULATED)
     FetchContent_Populate(sleepydiscord)
+
+    # Patch sleepydiscord's CMakeLists.txt to pin ASIO to 1-22-0 instead of master.
+    # Websocketpp is incompatible with ASIO ≥1.24 (io_service removed).
+    file(READ "${sleepydiscord_SOURCE_DIR}/CMakeLists.txt" _sd_cmake)
+    string(REGEX REPLACE
+        "(PROJ[ \t]+asio[ \t]*\n[ \t]*GIT_REPOSITORY[ \t]+https://github.com/chriskohlhoff/asio.git\n[ \t]*GIT_TAG)[ \t]+master"
+        "\\1        asio-1-22-0"
+        _sd_cmake "${_sd_cmake}"
+    )
+    file(WRITE "${sleepydiscord_SOURCE_DIR}/CMakeLists.txt" "${_sd_cmake}")
+    unset(_sd_cmake)
+
     add_subdirectory(${sleepydiscord_SOURCE_DIR} ${sleepydiscord_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
@@ -55,11 +67,22 @@ if (WIN32)
 endif()
 
 find_package(OpenSSL REQUIRED)
-add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp" "src/config/messages.cpp" "src/downtimeTracker.cpp" "src/rabids.cpp" "src/syncEngine.cpp" "src/sqlite3.c")
+add_executable (${PROJECT_NAME} "src/main.cpp" "src/config.cpp" "src/config/messages.cpp" "src/downtimeTracker.cpp" "src/rabids.cpp" "src/utils.cpp" "src/commands.cpp" "src/process.cpp" "src/syncEngine.cpp" "src/sqlite3.c")
 add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} OpenSSL::SSL)
 target_link_libraries(${PROJECT_NAME} sleepy-discord)
 target_link_libraries(${PROJECT_NAME} fmt)
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(CURL QUIET libcurl)
+endif()
+if(CURL_FOUND)
+    target_link_libraries(${PROJECT_NAME} ${CURL_LIBRARIES})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${CURL_INCLUDE_DIRS})
+else()
+    find_package(CURL REQUIRED)
+    target_link_libraries(${PROJECT_NAME} CURL::libcurl)
+endif()
 target_link_libraries(${PROJECT_NAME} dl)
 target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 if (WIN32)
@@ -67,3 +90,5 @@ if (WIN32)
 else()
     target_link_libraries(R.A.B.I.D.S Boost::log_setup Boost::log)
 endif()
+
+# Tests are standalone: cmake -B build/tests -S tests && cmake --build build/tests

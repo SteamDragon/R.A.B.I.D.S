@@ -1,0 +1,26 @@
+name: Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@e2f20e631ae6d7dd3b768f56a5d2af784dd54791
+
+      - name: deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install libssl-dev
+
+      - name: Configure CMake
+        run: cmake -B build -S tests -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build tests
+        run: cmake --build build --parallel
+
+      - name: Run tests
+        run: ./build/rabids_test

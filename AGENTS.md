@@ -17,29 +17,42 @@ The binary is `build/R.A.B.I.D.S`. Requires `config.cfg` in CWD at runtime and a
 |-----|--------|-------|
 | Boost (date_time, log, log_setup) | System (`libboost-all-dev` on Ubuntu) | Static linked (`Boost_USE_STATIC_LIBS ON`) |
 | OpenSSL | System | Used for PBKDF2 password hashing |
+| libcurl | System (`libcurl4-openssl-dev` on Ubuntu) | Found via pkg-config (Linux) / find_package (Windows) |
 | `nlohmann_json` | FetchContent (v3.10.5) | Pulled via ArthurSonzogni/cmake wrapper |
 | `sleepy-discord` | FetchContent (SteamDragon/sleepy-discord, origin/develop) | Custom fork, not upstream |
 | `fmt` | FetchContent (tag 8.1.1) | |
 | `dl` | System (`target_link_libraries(... dl)`) | |
 | SQLite3 | Bundled (`src/sqlite3.c` + `include/sqlite3.h`) | Compiled as C within C++17 target |
 
-## Testing / lint / format / typecheck
+## Testing
 
-**None exist.** No test framework, no test targets, no CI test step. No `.clang-format`, `.clang-tidy`, or pre-commit config. SonarLint IDE configs live in `.sonarlint/` but are not enforced in CI.
+Tests are a **standalone CMake project** in `tests/` (no sleepydiscord/Boost):
 
-To add tests, GoogleTest or Catch2 would need to be wired via CMake `FetchContent`.
+```sh
+cmake -B build/tests -S tests -DCMAKE_BUILD_TYPE=Debug
+cmake --build build/tests
+./build/tests/rabids_test
+```
+
+Tests use GoogleTest (v1.14.0, fetched via FetchContent) and cover:
+- `TranslitRusEng` — Cyrillic → Latin transliteration
+- `trim` / `ltrim` / `rtrim` — whitespace trimming
+- `PBKDF2_HMAC_SHA_512` — password hashing (known-vector test)
+- `CurrentTime` — timestamp formatting
+- `random_string` / `charset` — random generation
 
 ## CI
 
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
 | `ci.yaml` | Push / PR / tag `v**.**.**` | Delegates to `x64.yml` (build only); on tags also calls `release.yaml` |
-| `x64.yml` | Reusable | Ubuntu, `gcc-10`/`g++-10`, CMake Release build, uploads `R.A.B.I.D.S_x64` artifact |
+| `test.yml` | Push to PR (`opened`, `synchronize`) | Builds and runs `rabids_test` |
+| `x64.yml` | Reusable | Ubuntu, CMake Release build, uploads `R.A.B.I.D.S_x64` artifact |
 | `release.yaml` | Reusable | Zips artifact, creates **draft** GitHub release |
 | `codeql.yml` | Push/PR to `develop`, weekly | CodeQL C++ analysis |
 | `scorecards.yml` | Branch protection, weekly | OpenSSF Scorecards |
 
-No test or lint step runs in CI.
+No lint or format check runs in CI.
 
 ## Architecture notes
 
