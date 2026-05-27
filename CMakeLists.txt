@@ -35,24 +35,17 @@ FetchContent_GetProperties(sleepydiscord)
 if(NOT sleepy-discord_POPULATED)
     FetchContent_Populate(sleepydiscord)
 
-    if(NOT WIN32)
-        set(ASIO_TAG "asio-1-22-0")
-        set(ASIO_DIR ${sleepydiscord_SOURCE_DIR}/deps/asio)
-        if(NOT EXISTS ${ASIO_DIR}/CMakeLists.txt)
-            message(STATUS "Pinning ASIO to ${ASIO_TAG} (websocketpp compatibility)")
-            execute_process(
-                COMMAND git clone --branch ${ASIO_TAG} --depth 1
-                    https://github.com/chriskohlhoff/asio.git
-                    ${ASIO_DIR}
-                RESULT_VARIABLE ASIO_CLONE_RESULT
-                ERROR_VARIABLE ASIO_CLONE_ERROR
-                OUTPUT_QUIET
-            )
-            if(NOT ASIO_CLONE_RESULT EQUAL 0)
-                message(WARNING "Failed to pin ASIO: ${ASIO_CLONE_ERROR}")
-            endif()
-        endif()
-    endif()
+    # sleepydiscord's CMakeLists.txt downloads ASIO with GIT_TAG master,
+    # but websocketpp doesn't compile against ASIO ≥1.24 (no io_service).
+    # Pin to asio-1-22-0 which still provides the io_service typedef.
+    file(READ "${sleepydiscord_SOURCE_DIR}/CMakeLists.txt" _sd_cmake)
+    string(REPLACE
+        "GIT_TAG        master"
+        "GIT_TAG        asio-1-22-0"
+        _sd_cmake "${_sd_cmake}"
+    )
+    file(WRITE "${sleepydiscord_SOURCE_DIR}/CMakeLists.txt" "${_sd_cmake}")
+    unset(_sd_cmake)
 
     add_subdirectory(${sleepydiscord_SOURCE_DIR} ${sleepydiscord_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
