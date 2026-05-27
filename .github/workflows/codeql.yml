@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+env:
+  BUILD_TYPE: Release
+
 jobs:
   analyze:
     name: Analyze
@@ -34,16 +37,20 @@ jobs:
       with:
         languages: ${{ matrix.language }}
 
-    - name: boost
+    - name: Install Boost
       run: sudo apt-get install libboost-all-dev
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@ec3cf9c605b848da5f1e41e8452719eb1ccfb9a6
+    - name: Configure CMake
+      run: |
+        export CC=/usr/bin/gcc-10
+        export CXX=/usr/bin/g++-10
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - run: gcc --version
-          export CC=/usr/bin/gcc-10
-          export CXX=/usr/bin/g++-10
-          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    - name: Build
+      run: |
+        export CC=/usr/bin/gcc-10
+        export CXX=/usr/bin/g++-10
+        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@ec3cf9c605b848da5f1e41e8452719eb1ccfb9a6
