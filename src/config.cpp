@@ -19,29 +19,21 @@ config::config(std::string configPath): _configPath(std::move(configPath)) {
 	template_.helpMessage = jsonConfig["HelpMessage"];
 	template_.serverOffMessage = jsonConfig["ServerOffMessage"];
 	template_.dbUpdateMessage = jsonConfig["DBUpdateMessage"];
-	dBFolder = jsonConfig["DBFolder"];
-	tempFolder = jsonConfig["TempFolder"];
-	usersDatabaseName = jsonConfig["UsersDatabaseName"];
-	actorsDatabaseName = jsonConfig["ActorsDatabaseName"];
-	localUserDB = jsonConfig["LocalUserDB"];
-	localActorDB = jsonConfig["LocalActorDB"];
-	playerCountFile = jsonConfig["PlayerCountFile"];
+	foundryUrl = jsonConfig["FoundryUrl"];
+	foundryApiKey = jsonConfig["FoundryApiKey"];
+	bridgeDir = jsonConfig["BridgeDir"];
 	channelId = jsonConfig["ChannelId"];
 	alertChannelId = jsonConfig["AlertChannelId"];
 	timedRegistrationString = jsonConfig["TimedRegistrationString"];
 	template_.succeedRegistrationString = jsonConfig["SucceedRegistrationString"];
-	userTemplate = jsonConfig["UserTemplate"];
 	token = jsonConfig["Token"];
 	template_.alertMessage = jsonConfig["AlertMessage"];
-	actorTemplate = jsonConfig["ActorTemplate"];
 	template_.readyMessage = jsonConfig["ReadyMessage"];
 	template_.serverStartedMessage = jsonConfig["ServerStartedMessage"];
 	template_.serverFailedToStartMessage = jsonConfig["ServerFailedToStartMessage"];
 	template_.serverStoppedMessage = jsonConfig["ServerStoppedMessage"];
 	template_.serverFailedToStopMessage = jsonConfig["ServerFailedToStopMessage"];
 	restartTimeoutTemplate = jsonConfig["RestartTimeoutTemplate"];
-	downtimeChannelId = jsonConfig["DowntimeChannelId"];
-	downtimeMessageId = jsonConfig["DowntimeMessageId"];
 	template_.setRestartTimeoutFailedMessage = jsonConfig["SetRestartTimeoutFailedMessage"];
 	template_.generalError = jsonConfig["GeneralError"];
 	template_.downtimeError = jsonConfig["DowntimeError"];
@@ -56,39 +48,19 @@ std::string config::getVersion() const
     return version;
 }
 
-std::string config::DBFolder() const
+std::string config::FoundryUrl() const
 {
-    return dBFolder;
+    return foundryUrl;
 }
 
-std::string config::TempFolder() const
+std::string config::FoundryApiKey() const
 {
-    return tempFolder;
+    return foundryApiKey;
 }
 
-std::string config::UsersDatabaseName() const
+std::string config::BridgeDir() const
 {
-    return usersDatabaseName;
-}
-
-std::string config::ActorsDatabaseName() const
-{
-    return actorsDatabaseName;
-}
-
-std::string config::LocalUserDB() const
-{
-    return localUserDB;
-}
-
-std::string config::LocalActorDB() const
-{
-    return localActorDB;
-}
-
-std::string config::PlayerCountFile() const
-{
-    return playerCountFile;
+    return bridgeDir;
 }
 
 std::string config::ChannelId() const
@@ -106,19 +78,9 @@ std::string config::TimedRegistrationString() const
     return timedRegistrationString;
 }
 
-std::string config::UserTemplate() const
-{
-    return userTemplate;
-}
-
 std::string config::Token() const
 {
     return token;
-}
-
-std::string config::ActorTemplate() const
-{
-    return actorTemplate;
 }
 
 std::string config::RestartTimeoutTemplate() const
@@ -160,14 +122,12 @@ void config::SetRestartInterval(long long newRestartInterval)
 {
     jsonConfig["RestartInterval"] = newRestartInterval;
     restartInterval = newRestartInterval;
-	
+
     std::ofstream output(_configPath);
     output << std::setw(4) << jsonConfig << std::endl;
 	output.close();
 }
 
-
-    
 Messages config::GetTextMessages() const
 {
 	return textMessages;

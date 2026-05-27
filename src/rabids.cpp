@@ -8,7 +8,6 @@
 
 char_array charset()
 {
-	// Change this to suit
 	return char_array(
 		{'0', '1', '2', '3', '4',
 		 '5', '6', '7', '8', '9',
@@ -44,10 +43,6 @@ namespace Command
 	}
 }
 
-/// <summary>
-/// Get current date/time, format is YYYY-MM-DD HH:mm:ss
-/// </summary>
-/// <returns>Time string</returns>
 std::string CurrentTime()
 {
 	char buf[80];
@@ -82,7 +77,6 @@ void RABIDS::onInteraction(SleepyDiscord::Interaction interaction)
 	auto foundCommand = Command::all.find(interaction.data.name);
 	if (foundCommand == Command::all.end())
 	{
-		// not found
 		SleepyDiscord::Interaction::Response<> response;
 		response.type = SleepyDiscord::Interaction::CallbackType::ChannelMessageWithSource;
 		response.data.content = "Couldn't find command";
@@ -389,20 +383,8 @@ std::string RABIDS::Register(SleepyDiscord::User user, const std::string& passwo
 		char hexResult[2 * SHA512_DIGEST_LENGTH + 1];
 		memset(hexResult, 0, sizeof(hexResult));
 		PBKDF2_HMAC_SHA_512(pwd.c_str(), reinterpret_cast<const unsigned char *>(salt.c_str()), 1000, SHA512_DIGEST_LENGTH, hexResult);
-		json userJson = GetUserToUpdate(salt);
-		if (userJson["name"] == "name")
-		{
-			userJson["name"] = "-- " + user.username + " --";
-		}
 
-		userJson["password"] = hexResult;
-		users.push_back(userJson);
-
-		json actor = RABIDS::GetActorToUpdate(userJson);
-		if (actor.dump() != "{\"status\":\"null\"}")
-		{
-			actors.push_back(RABIDS::GetActorToUpdate(userJson));
-		}
+		sync->enqueueRegistration(user.ID, user.username, hexResult);
 
 		if (checkServerStatus() == ServerStatus::READY)
 		{
@@ -411,29 +393,6 @@ std::string RABIDS::Register(SleepyDiscord::User user, const std::string& passwo
 		else
 		{
 			result = configuration->GetTextMessages().SucceedRegistrationString();
-		}
-
-		dbChanged = true;
-		if (!users.empty())
-		{
-			std::ofstream dataUsers(tempUsersInternal, std::ios::out | std::ios::app);
-			for (json user_json : users)
-			{
-				dataUsers << user_json.dump();
-			}
-
-			dataUsers.close();
-		}
-
-		if (!actors.empty())
-		{
-			std::ofstream dataActors(tempActorsInternal, std::ios::out | std::ios::app);
-			for (json actor_Json : actors)
-			{
-				dataActors << actor_Json.dump();
-			}
-
-			dataActors.close();
 		}
 	}
 	catch (...)
@@ -509,13 +468,7 @@ void RABIDS::scheduleStatusUpdate()
 			updatingDB = true;
 		LOG(info)<<"Update Status";
 			this->updateStatus(configuration->GetTextMessages().DbUpdateMessage(), 0, SleepyDiscord::Status::online, false);
-		LOG(info)<<"updateLocalDBInstance";
-			updateLocalDBInstance();
-		LOG(info)<<"updateDB";
-			updateDB();
-		LOG(info)<<"uploadDB";
-			uploadDBUsersDb();
-			uploadDBActorsDb();
+		LOG(info)<<"restartServer";
 			updatingDB = false;
 		LOG(info)<<"startServer";
 			startServer();
@@ -524,43 +477,19 @@ void RABIDS::scheduleStatusUpdate()
 			break;
 		}
 
-		if(checkServerStatus() == ServerStatus::OFF && dbChanged)
-		{
-			updatingDB = true;
-		}
-
-		if(numberOfPlayers == 0 && dbChanged)
-		{
-			if(counter == 40)
-			{
-				updatingDB = true;
-				counter = 0;
-			}
-
-			if(!updatingDB)
-			{
-				counter++;
-			}
-		}
-
 
 		this->scheduleStatusUpdate();
 		if (checkServerStatus() == ServerStatus::READY)
 		{
-			std::ifstream input( configuration->PlayerCountFile(), std::ios_base::in);
-			std::string line;
-			std::getline(input, line);
-			input.close();
-			if(line != "")
+			int count = 0;
+			if (sync && sync->loadPlayerCount(count))
 			{
-				numberOfPlayers = std::stoi(line);
+				numberOfPlayers = count;
 			}
 			else
 			{
 				numberOfPlayers = 0;
 			}
-
-			input.close();
 		}
 		else
 		{
@@ -571,29 +500,16 @@ void RABIDS::scheduleStatusUpdate()
 
 void RABIDS::startClient(config& externalConfig)
 {
+	sync = new SyncEngine(
+		externalConfig.BridgeDir(),
+		externalConfig.FoundryUrl(),
+		externalConfig.FoundryApiKey()
+	);
+
 	configuration = &externalConfig;
-	dbUsers = configuration->DBFolder() + "/" + configuration->UsersDatabaseName();
-	tempUsers = configuration->TempFolder() + "/" + configuration->UsersDatabaseName();
-	dbActors = configuration->DBFolder() + "/" + configuration->ActorsDatabaseName();
-	tempActors = configuration->TempFolder() + "/" + configuration->ActorsDatabaseName();
-	tempUsersInternal = configuration->TempFolder() + "/" + configuration->LocalUserDB();
-	tempActorsInternal = configuration->TempFolder() + "/" + configuration->LocalActorDB();
-	std::filesystem::create_directories(std::filesystem::path(configuration->TempFolder()));
 
 	tracker.init();
-	this->loadLocalDatabases();
-	if (!users.empty() || !actors.empty())
-	{
-		updatingDB = true;
-	}
-	else
-	{
-		this->schedule([this]()
-					   {
-							   LOG(info) << "Server Start Scheduled";
-						   startServer(); },
-					   500);
-	}
+
 	this->schedule([this]()
 				   {
 						   LOG(info) << "Schedule Status Update";
@@ -706,40 +622,6 @@ void RABIDS::scheduleRestart()
 	}
 }
 
-void RABIDS::cleanLocalDatabases()
-{
-	std::filesystem::remove(configuration->LocalUserDB());
-	std::filesystem::remove(configuration->LocalActorDB());
-}
-
-void RABIDS::loadLocalDatabases()
-{
-	std::ifstream inputUsers(configuration->LocalUserDB(), std::ios_base::in);
-	std::string line;
-	if (inputUsers.is_open())
-	{
-		while (std::getline(inputUsers, line))
-		{
-			json user = json::parse(line);
-			users.push_back(user);
-		}
-
-		inputUsers.close();
-	}
-
-	std::ifstream inputActors(configuration->LocalActorDB(), std::ios_base::in);
-	if (inputActors.is_open())
-	{
-		while (std::getline(inputActors, line))
-		{
-			json actor = json::parse(line);
-			actors.push_back(actor);
-		}
-
-		inputActors.close();
-	}
-}
-
 int RABIDS::createChild(std::vector<std::string> arguments)
 {
 	int pid = fork();
@@ -747,7 +629,7 @@ int RABIDS::createChild(std::vector<std::string> arguments)
 	{
 		int length = (int)arguments.size();
 		const char **argv = new const char *[length + 1];
-		for (int j = 0; j < length; ++j) // copy args
+		for (int j = 0; j < length; ++j)
 			argv[j] = arguments[j].c_str();
 		argv[length] = NULL;
 		StdErrHandler err([](const char *line)
@@ -765,25 +647,19 @@ int RABIDS::createChild(std::vector<std::string> arguments)
 								  BOOST_LOG_TRIVIAL(info) << line;
 							  }
 						   } });
-		// We are in the child process, execute the command
 		execv(arguments[0].c_str(), (char **)argv);
 
-		// If execl returns, there was an error
 		LOG(error) << "Exec error: " << errno << ", " << strerror(errno);
 
-		// Exit child process
 		exit(1);
 	}
 	else if (pid > 0)
 	{
 		signal(SIGCHLD, SIG_IGN);
 		return pid;
-		// The parent process, do whatever is needed
-		// The parent process can even exit while the child process is running, since it's independent
 	}
 	else
 	{
-		// Error forking, still in parent process (there are no child process at this point)
 		LOG(error) << "Fork error: " << errno << ", " << strerror(errno);
 		return -1;
 	}
@@ -794,169 +670,19 @@ std::string RABIDS::exec(std::string command)
 	char buffer[128];
 	std::string result = "";
 
-	// Open pipe to file
 	FILE *pipe = popen(command.c_str(), "r");
 	if (!pipe)
 	{
 		return "popen failed!";
 	}
 
-	// read till end of process:
 	while (!feof(pipe))
 	{
 
-		// use buffer to read and add to result
 		if (fgets(buffer, 128, pipe) != NULL)
 			result += buffer;
 	}
 
 	pclose(pipe);
 	return result;
-}
-
-json RABIDS::GetUserToUpdate(std::string userId)
-{
-	updateLocalDBInstance();
-	std::string line;
-	json user;
-	bool found = false;
-	std::ifstream input(tempUsers);
-	while (std::getline(input, line))
-	{
-		user = json::parse(line);
-		if (user["passwordSalt"] == userId)
-		{
-			found = true;
-			break;
-		}
-	}
-
-	if (!found)
-	{
-		user = json::parse(configuration->UserTemplate());
-		const auto ch_set = charset();
-		std::default_random_engine rng(std::random_device{}());
-		std::uniform_int_distribution<> dist(0, ch_set.size() - 1);
-		auto randchar = [ch_set, &dist, &rng]()
-		{ return ch_set[dist(rng)]; };
-		auto length = 16;
-		user["_id"] = random_string(length, randchar);
-		user["passwordSalt"] = userId;
-	}
-
-	return user;
-}
-
-void RABIDS::updateLocalDBInstance()
-{
-	std::filesystem::create_directories(std::filesystem::path(configuration->TempFolder()));
-	std::filesystem::copy(dbActors, tempActors, std::filesystem::copy_options::overwrite_existing);
-	std::filesystem::copy(dbUsers, tempUsers, std::filesystem::copy_options::overwrite_existing);
-}
-
-bool RABIDS::updateDB()
-{
-	LOG(info) << "updateDB";
-	std::fstream file;
-	file.open(tempUsers, std::ios::out | std::ios::app);
-	if (!file.is_open())
-	{
-		LOG(info) << "Failed To Open Users.DB";
-		return false;
-	}
-
-	for (json user : users)
-	{
-		file << user.dump();
-	}
-
-	users.clear();
-	file.close();
-	file.open(tempActors, std::ios::out | std::ios::app);
-	if (!file.is_open())
-	{
-		LOG(info) << "Failed To Open Actors.DB";
-		return false;
-	}
-
-	for (json actor : actors)
-	{
-		file << actor.dump();
-	}
-
-	actors.clear();
-	file.close();
-	cleanLocalDatabases();
-	dbChanged = false;
-	return true;
-}
-
-bool RABIDS::uploadDBUsersDb()
-{
-	try
-	{
-		std::filesystem::copy(tempUsers, dbUsers, std::filesystem::copy_options::overwrite_existing);
-		return true;
-	}
-	catch (...)
-	{
-		return false;
-	}
-}
-
-bool RABIDS::uploadDBActorsDb()
-{
-
-	try
-	{
-		std::filesystem::copy(tempActors, dbActors, std::filesystem::copy_options::overwrite_existing);
-		return true;
-	}
-	catch (...)
-	{
-		return false;
-	}
-}
-
-json RABIDS::GetActorToUpdate(json user)
-{
-	updateLocalDBInstance();
-	std::string line;
-	json actor;
-	bool found = false;
-	std::ifstream input(tempActors);
-	while (std::getline(input, line))
-	{
-		actor = json::parse(line);
-		if (actor["permission"].contains(user["_id"]))
-		{
-			found = true;
-			break;
-		}
-	}
-	input.close();
-
-	if (!found)
-	{
-		actor = json::parse(configuration->ActorTemplate());
-		const auto ch_set = charset();
-		std::default_random_engine rng(std::random_device{}());
-		std::uniform_int_distribution<> dist(0, ch_set.size() - 1);
-		auto randchar = [ch_set, &dist, &rng]()
-		{ return ch_set[dist(rng)]; };
-		auto length = 16;
-		actor["_id"] = random_string(length, randchar);
-		std::string permission = "{\"default\": 0,\"";
-		permission += user["_id"];
-		permission += "\": 3}";
-		actor["permission"] = json::parse(permission);
-		actor["name"] = user["name"];
-		actor["token"]["name"] = user["name"];
-	}
-	else
-	{
-		actor = json::parse("{\"status\":\"null\"}");
-	}
-
-	return actor;
 }

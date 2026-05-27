@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 #include <config.h>
 #include <downtimeTracker.h>
+#include <syncEngine.h>
 #include <sleepy_discord/sleepy_discord.h>
 #include <exception>
 
@@ -29,13 +30,11 @@ public:
 
 private:
 	config *configuration;
+	SyncEngine* sync;
 	bool updatingDB = false;
-	bool dbChanged = false;
 	void scheduleStatusUpdate();
 	ServerStatus checkServerStatus();
 	std::string generalName = "";
-	std::vector<json> users;
-	std::vector<json> actors;
 	int numberOfPlayers = 0;
 	int pid = 0;
 	int counter = 0;
@@ -43,24 +42,8 @@ private:
 	bool stopServer();
 	std::string exec(std::string command);
 	int createChild(std::vector<std::string> arguments);
-
-	void updateLocalDBInstance();
-	json GetUserToUpdate(std::string userId);
-	json GetActorToUpdate(json user);
-	bool updateDB();
-	bool uploadDBUsersDb();
-	bool uploadDBActorsDb();
-	void loadLocalDatabases();
-	void cleanLocalDatabases();
 	void scheduleRestart();
 	void SendErrorMessage();
-	
-	std::string dbUsers;
-	std::string tempUsers;
-	std::string dbActors;
-	std::string tempActors;
-	std::string tempUsersInternal;
-	std::string tempActorsInternal;
 
 	downtimeTracker tracker;
 	std::string prevErrorMsg;

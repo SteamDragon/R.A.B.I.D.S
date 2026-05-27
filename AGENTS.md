@@ -23,11 +23,6 @@ The binary is `build/R.A.B.I.D.S`. Requires `config.cfg` in CWD at runtime and a
 | `dl` | System (`target_link_libraries(... dl)`) | |
 | SQLite3 | Bundled (`src/sqlite3.c` + `include/sqlite3.h`) | Compiled as C within C++17 target |
 
-## Known bugs / pitfalls
-
-- **`CMakeLists.txt:40`** – `fmt` fetch block checks `sleepy-discord_POPULATED` instead of `fmt_POPULATED`. When touching this, fix the variable name.
-- **`rabids.cpp:7`** – `#include <experimental/filesystem>` is dead code; only `std::filesystem` (C++17) is used.
-
 ## Testing / lint / format / typecheck
 
 **None exist.** No test framework, no test targets, no CI test step. No `.clang-format`, `.clang-tidy`, or pre-commit config. SonarLint IDE configs live in `.sonarlint/` but are not enforced in CI.
@@ -50,7 +45,9 @@ No test or lint step runs in CI.
 
 - **Entrypoint**: `src/main.cpp` — init Boost.Log, load `config.cfg` as JSON, instantiate `RABIDS` (extends `SleepyDiscord::DiscordClient`), call `startClient()`.
 - **Config self-mutation**: `SetRestartInterval()` writes back to `config.cfg` on disk at runtime.
-- **Hardcoded values in `rabids.h:66-67`**: `downtimeChannel` and `downtimeMessage` are raw string IDs.
+- **SyncEngine** (`include/syncEngine.h`, `src/syncEngine.cpp`) — replaces direct file access to Foundry VTT data. Reads/writes bridge JSON files in `BridgeDir` and enqueues commands for the Foundry module.
+- **Foundry module** (`modules/rabids-bridge/`) — JS module for Foundry VTT v12+, syncs LevelDB → JSON files on world load and via hooks. Processes registration commands from the bridge directory.
+- **No direct LevelDB/SQLite access to Foundry data**. All C++ ↔ Foundry communication goes through JSON files in `BridgeDir` (default: `./data/bridge/`).
 - **Russian locale**: All message strings in the example config are Russian. A `TranslitRusEng` function handles Cyrillic → Latin output in downtime tables.
 - **SonarCloud**: Configured in `sonar-project.properties` (project key `SteamDragon_rabids`). Sources: `src,include`. Exclusions: `sqlite3.{c,h}`, `stdiohandler.h`, `VariadicTable.h`.
 - **OS support**: Linux primary (CI). Windows via VS with Ninja + MSVC (`CMakeSettings.json` points to `boost_1_78_0`).
