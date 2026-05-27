@@ -29,7 +29,8 @@ public:
     std::string ActorTemplate() const;
     std::string RestartTimeoutTemplate() const;
     std::string GetConfigPath() const;
-    
+    std::string DowntimeChannelId() const;
+    std::string DowntimeMessageId() const;
 
     std::vector<std::string> ApplicationAndArguments() const;
 
@@ -57,6 +58,8 @@ private:
     std::string token;
     std::string actorTemplate;
     std::string restartTimeoutTemplate;
+    std::string downtimeChannelId;
+    std::string downtimeMessageId;
 
     std::vector<std::string> applicationAndArguments;
     long long restartInterval;

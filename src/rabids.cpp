@@ -2,9 +2,9 @@
 
 #include <filesystem>
 #include <random>
+#include <vector>
 
 #include "stdiohandler.h"
-#include <experimental/filesystem>
 
 char_array charset()
 {
@@ -23,14 +23,6 @@ char_array charset()
 		 'q', 'r', 's', 't', 'u',
 		 'v', 'w', 'x', 'y', 'z'});
 };
-
-template <typename T>
-void pop_front(std::vector<T> &vec)
-{
-	assert(!vec.empty());
-	vec.front() = std::move(vec.back());
-	vec.pop_back();
-}
 
 namespace Command
 {
@@ -70,9 +62,9 @@ std::string CurrentTime()
 
 void PBKDF2_HMAC_SHA_512(const char *pass, const unsigned char *salt, int32_t iterations, uint32_t outputBytes, char *hexResult)
 {
-	unsigned char digest[outputBytes];
-	PKCS5_PBKDF2_HMAC(pass, strlen(pass), salt, strlen((char *)salt), iterations, EVP_sha512(), outputBytes, digest);
-	for (unsigned int i = 0; i < sizeof(digest); i++)
+	std::vector<unsigned char> digest(outputBytes);
+	PKCS5_PBKDF2_HMAC(pass, strlen(pass), salt, strlen((char *)salt), iterations, EVP_sha512(), outputBytes, digest.data());
+	for (unsigned int i = 0; i < digest.size(); i++)
 	{
 		sprintf(hexResult + (i * 2), "%02x", 255 & digest[i]);
 	}
@@ -220,8 +212,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			tracker.InsertEntry(mentionId, username, actorname);
 			sendMessage(message.channelID, "Done");
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
-				channelId = downtimeChannel;
-			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
+				channelId = configuration->DowntimeChannelId();
+			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = configuration->DowntimeMessageId();
 			editMessage(channelId, dtMessageId, tracker.FormTable());
 			LOG(info) << "Inserting Downtime succeed: " << message.content;
 		}
@@ -238,8 +230,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 		try
 		{
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
-				channelId = downtimeChannel;
-			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
+				channelId = configuration->DowntimeChannelId();
+			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = configuration->DowntimeMessageId();
 			editMessage(channelId, dtMessageId, tracker.FormTable());
 			LOG(info) << "Downtime Table Updated";
 			sendMessage(message.channelID, "Done");
@@ -274,8 +266,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			std::string mentionId = mention.ID;
 			tracker.ReduceDowntimes(mentionId, number);
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
-				channelId = downtimeChannel;
-			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
+				channelId = configuration->DowntimeChannelId();
+			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = configuration->DowntimeMessageId();
 			editMessage(channelId, dtMessageId, tracker.FormTable());
 			sendMessage(message.channelID, "Done");
 			LOG(info) << "Usage of Downtime succeed: " << message.content;
@@ -310,8 +302,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 
 			tracker.AddDowntimes(records, number);
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
-				channelId = downtimeChannel;
-			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
+				channelId = configuration->DowntimeChannelId();
+			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = configuration->DowntimeMessageId();
 			editMessage(channelId, dtMessageId, tracker.FormTable());
 			sendMessage(message.channelID, "Healing: " + tracker.GetLastHealList());
 			sendMessage(message.channelID, "Cryo: " + tracker.GetLastCryoList());
@@ -371,8 +363,8 @@ void RABIDS::onMessage(SleepyDiscord::Message message)
 			std::string mentionId = message.mentions[0].ID;
 			tracker.AddHealing(mentionId, number, cryo);
 			SleepyDiscord::Snowflake<SleepyDiscord::Channel>
-				channelId = downtimeChannel;
-			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = downtimeMessage;
+				channelId = configuration->DowntimeChannelId();
+			SleepyDiscord::Snowflake<SleepyDiscord::Message> dtMessageId = configuration->DowntimeMessageId();
 			editMessage(channelId, dtMessageId, tracker.FormTable());
 			sendMessage(message.channelID, "Done");
 			LOG(info) << "Heal adding succeed: " << message.content;
@@ -577,7 +569,7 @@ void RABIDS::scheduleStatusUpdate()
 				   3000);
 }
 
-void RABIDS::startClient(config externalConfig)
+void RABIDS::startClient(config& externalConfig)
 {
 	configuration = &externalConfig;
 	dbUsers = configuration->DBFolder() + "/" + configuration->UsersDatabaseName();

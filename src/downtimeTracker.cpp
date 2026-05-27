@@ -1,49 +1,148 @@
 #include "downtimeTracker.h"
 #include "VariadicTable.h"
 
+#include <algorithm>
+#include <cctype>
+#include <sstream>
+
+std::string TranslitRusEng(const std::string& str)
+{
+    std::vector<std::string> rus = {"А", "а", "Б", "б", "В", "в", "Г", "г", "Ґ", "ґ", "Д", "д", "Е", "е", "Є", "є", "Ж", "ж", "З", "з", "И", "и", "І", "і", "Ї", "ї", "Й", "й", "К", "к",
+                                    "Л", "л", "М", "м", "Н", "н", "О", "о", "П", "п", "Р", "р", "С", "с", "Т", "т", "У", "у", "Ф", "ф", "Х", "х", "Ц", "ц", "Ч", "ч", "Ш", "ш",
+                                    "Щ", "щ", "Ь", "ь", "Ю", "ю", "Я", "я", "Ы", "ы", "Ъ", "ъ", "Ё", "ё", "Э", "э"};
+
+    std::vector<std::string> eng = {"A", "a", "B", "b", "V", "v", "G", "g", "G", "g", "D", "d", "E", "e", "E", "E", "Zh", "zh", "Z", "z", "I", "i", "I", "I", "Yi", "yi", "J", "j", "K", "k",
+                                    "L", "l", "M", "m", "N", "n", "O", "o", "P", "p", "R", "r", "S", "s", "T", "t", "U", "u", "F", "f", "H", "h", "Ts", "ts", "ch", "ch", "Sh", "sh",
+                                    "Shh", "shh", "'", "'", "Yu", "yu", "Ya", "ya", "Y", "y", "", "", "Yo", "yo", "E", "e"};
+    std::string ret;
+
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        bool found = false;
+        for (int j = 0; j < 74; j++)
+        {
+            if (str.substr(i, 2).compare(rus[j]) == 0)
+            {
+                ret += eng[j];
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+            ret += str.substr(i, 1);
+    }
+
+    return ret;
+}
+
+void ltrim(std::string& s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
+                                    { return !std::isspace(ch); }));
+}
+
+void rtrim(std::string& s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
+                         { return !std::isspace(ch); })
+                .base(),
+            s.end());
+}
+
+void trim(std::string& s)
+{
+    ltrim(s);
+    rtrim(s);
+}
+
+static const int COL_DISCORD_ID = 1;
+static const int COL_USER_NAME  = 2;
+static const int COL_ACTOR_NAME = 3;
+static const int COL_DOWNTIME   = 4;
+static const int COL_HEALING    = 5;
+static const int COL_CRYO       = 6;
+
+int downtimeTracker::exec(const std::string& sql, const std::vector<std::string>& params)
+{
+    sqlite3_stmt* stmt = nullptr;
+    int rc = sqlite3_prepare_v2(ppDB, sql.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "SQL prepare error: " << sqlite3_errmsg(ppDB) << "\n  SQL: " << sql << "\n";
+        return rc;
+    }
+
+    for (size_t i = 0; i < params.size(); i++)
+    {
+        sqlite3_bind_text(stmt, static_cast<int>(i + 1), params[i].c_str(), -1, SQLITE_TRANSIENT);
+    }
+
+    rc = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+
+    if (rc != SQLITE_DONE && rc != SQLITE_OK)
+    {
+        std::cerr << "SQL exec error: " << sqlite3_errmsg(ppDB) << "\n  SQL: " << sql << "\n";
+    }
+    return rc;
+}
+
+Records downtimeTracker::query(const std::string& sql, const std::vector<std::string>& params)
+{
+    Records records;
+    sqlite3_stmt* stmt = nullptr;
+    int rc = sqlite3_prepare_v2(ppDB, sql.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK)
+    {
+        std::cerr << "SQL prepare error: " << sqlite3_errmsg(ppDB) << "\n  SQL: " << sql << "\n";
+        return records;
+    }
+
+    for (size_t i = 0; i < params.size(); i++)
+    {
+        sqlite3_bind_text(stmt, static_cast<int>(i + 1), params[i].c_str(), -1, SQLITE_TRANSIENT);
+    }
+
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW)
+    {
+        Record row;
+        int colCount = sqlite3_column_count(stmt);
+        for (int i = 0; i < colCount; i++)
+        {
+            const char* val = reinterpret_cast<const char*>(sqlite3_column_text(stmt, i));
+            row.emplace_back(val ? val : "");
+        }
+        records.push_back(std::move(row));
+    }
+
+    sqlite3_finalize(stmt);
+
+    if (rc != SQLITE_DONE)
+    {
+        std::cerr << "SQL query error: " << sqlite3_errmsg(ppDB) << "\n  SQL: " << sql << "\n";
+    }
+    return records;
+}
+
 void downtimeTracker::init()
 {
     sqlite3_open(downtimeDB.c_str(), &ppDB);
-    std::string sql = "CREATE TABLE IF NOT EXISTS downtime("
-                      "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                      "DiscordID           TEXT  DEFAULT \"\","
-                      "UserName           TEXT  DEFAULT \"\","
-                      "ActorName            TEXT DEFAULT \"\","
-                      "DowntimeDays        INT DEFAULT 0,"
-                      "Healing        INT DEFAULT 0,"
-                      "Cryo         INT DEFAULT 0);";
+    exec("CREATE TABLE IF NOT EXISTS downtime("
+         "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+         "DiscordID           TEXT  DEFAULT \"\","
+         "UserName           TEXT  DEFAULT \"\","
+         "ActorName            TEXT DEFAULT \"\","
+         "DowntimeDays        INT DEFAULT 0,"
+         "Healing        INT DEFAULT 0,"
+         "Cryo         INT DEFAULT 0);");
 
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-    if (rc != SQLITE_OK)
+    exec("CREATE TABLE IF NOT EXISTS time("
+         "data           TEXT  DEFAULT \"\");");
+
+    if (query("select * from time;").empty())
     {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
-        exit(-1);
-    }
-
-    sql = "CREATE TABLE IF NOT EXISTS time("
-          "data           TEXT  DEFAULT \"\");";
-
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
-        exit(-1);
-    }
-    
-    sql = "select * from time;";
-    if (select_stmt(sql.c_str()).size() == 0)
-    {
-        sql = "INSERT INTO time (data) VALUES('2045-Jan-01'); ";
-
-        rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-        if (rc != SQLITE_OK)
-        {
-            std::cerr << "SQL error: " << zErrMsg;
-            sqlite3_free(zErrMsg);
-            exit(-1);
-        }
+        exec("INSERT INTO time (data) VALUES('2045-Jan-01');");
     }
 }
 
@@ -52,20 +151,15 @@ void downtimeTracker::UpdateDate(int daysToAdd)
     auto dateString = GetDate();
     boost::gregorian::date date(boost::gregorian::from_simple_string(dateString));
     boost::gregorian::date_duration dd(daysToAdd);
-    auto sql = std::string("Update time set data = \"").append(boost::gregorian::to_simple_string(date + dd)).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
-        exit(-1);
-    }
+    exec("UPDATE time set data = ?;", {boost::gregorian::to_simple_string(date + dd)});
 }
 
 std::string downtimeTracker::GetDate()
 {
-    auto sql = std::string("select * from time;");
-    return select_stmt(sql.c_str()).front().front();
+    auto records = query("select * from time;");
+    if (records.empty() || records.front().empty())
+        return "2045-Jan-01";
+    return records.front().front();
 }
 
 std::string downtimeTracker::GetLastHealList() const
@@ -80,86 +174,84 @@ std::string downtimeTracker::GetLastCryoList() const
 
 downtimeTracker::~downtimeTracker()
 {
-    sqlite3_finalize(stmt);
-    sqlite3_close(ppDB);
+    if (ppDB)
+        sqlite3_close(ppDB);
 }
 
 downTimeEntry downtimeTracker::GetDowntimeEntry(std::string_view actorName)
 {
-    auto sql = std::string("Select * from downtime where downtime.ActorName == \"").append(actorName).append("\";");
-    Records records = select_stmt(sql.c_str());
-    std::string username = records.front()[1];
-    std::string _actorName = records.front()[2];
-    int downtimeDays = std::stoi(records.front()[3]);
-    int healing = std::stoi(records.front()[4]);
-    bool cryo = std::stoi(records.front()[5]);
-    return downTimeEntry(username, _actorName, downtimeDays, healing, cryo);
+    Records records = query("SELECT * FROM downtime WHERE ActorName = ?;", {std::string(actorName)});
+    if (records.empty())
+    {
+        std::cerr << "GetDowntimeEntry: no record found for actor " << actorName << "\n";
+        return downTimeEntry{};
+    }
+
+    const auto& row = records.front();
+    std::string discordId  = row[COL_DISCORD_ID];
+    std::string userName   = row[COL_USER_NAME];
+    std::string actName    = row[COL_ACTOR_NAME];
+    int downtimeDays = std::stoi(row[COL_DOWNTIME]);
+    int healing      = std::stoi(row[COL_HEALING]);
+    int cryo         = std::stoi(row[COL_CRYO]);
+    return downTimeEntry(userName, actName, downtimeDays, healing, cryo);
 }
 
-void downtimeTracker::AddDowntimes(std::vector<std::string> notAddDowntimeList, int numberOfDowntimes)
+void downtimeTracker::AddDowntimes(const std::vector<std::string>& notAddDowntimeList, int numberOfDowntimes)
 {
     LastHealList = "";
     LastCryoList = "";
     UpdateDate(numberOfDowntimes);
+    auto excludeIds = notAddDowntimeList;
     auto all = GetAll();
+
     for (auto actor : all)
     {
-        bool found = !(std::find(notAddDowntimeList.begin(), notAddDowntimeList.end(), actor[1]) != notAddDowntimeList.end());
-        if (std::stoi(actor[5]) > 0 && found)
+        bool skip = std::find(excludeIds.begin(), excludeIds.end(), actor[COL_DISCORD_ID]) != excludeIds.end();
+        if (std::stoi(actor[COL_HEALING]) > 0 && !skip)
         {
             for (auto i = 0; i < numberOfDowntimes; i++)
             {
-                ReduceHealing(actor[1], 1);
+                ReduceHealing(actor[COL_DISCORD_ID], 1);
             }
 
-            if (std::stoi(GetRecord(actor[1])[5]) > 0)
+            if (std::stoi(GetRecord(actor[COL_DISCORD_ID])[COL_CRYO]) > 0)
             {
-                notAddDowntimeList.push_back(actor[1]);
+                excludeIds.push_back(actor[COL_DISCORD_ID]);
             }
         }
     }
-    auto commaSepara = [](std::string a, std::string_view b)
+
+    if (excludeIds.empty())
     {
-        if (b == "")
-        {
-            return a;
-        }
-
-        return std::move(a) + "\" AND DiscordID <> \"" + std::string(b);
-    };
-
-    LOG(info) << std::accumulate(std::next(notAddDowntimeList.begin()), notAddDowntimeList.end(),
-                                 notAddDowntimeList[0], // start with first element
-                                 commaSepara);
-
-    auto sql = std::string("Update downtime set DowntimeDays = DowntimeDays + ").append(std::to_string(numberOfDowntimes)).append(" where DiscordID <> \"").append(std::accumulate(std::next(notAddDowntimeList.begin()), notAddDowntimeList.end(),
-                                                                                                                                                                                   notAddDowntimeList[0], // start with first element
-                                                                                                                                                                                   commaSepara))
-                   .append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
+        exec("UPDATE downtime SET DowntimeDays = DowntimeDays + ?;", {std::to_string(numberOfDowntimes)});
+        return;
     }
+
+    std::string sql = "UPDATE downtime SET DowntimeDays = DowntimeDays + ? WHERE DiscordID NOT IN (";
+    std::vector<std::string> params;
+    params.push_back(std::to_string(numberOfDowntimes));
+    for (size_t i = 0; i < excludeIds.size(); i++)
+    {
+        if (i > 0) sql += ",";
+        sql += "?";
+        params.push_back(excludeIds[i]);
+    }
+    sql += ");";
+    exec(sql, params);
 }
 
 void downtimeTracker::ReduceDowntimes(std::string_view discordId, int numberOfDays)
 {
-    auto sql = std::string("Update downtime set DowntimeDays = DowntimeDays - ").append(std::to_string(numberOfDays)).append(" where DiscordID  = \"").append(discordId).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
-    }
+    exec("UPDATE downtime SET DowntimeDays = DowntimeDays - ? WHERE DiscordID = ?;",
+         {std::to_string(numberOfDays), std::string(discordId)});
 }
 
 void downtimeTracker::ReduceHealing(std::string_view discordId, int numberOfDays)
 {
     auto record = GetRecord(discordId);
-    int cryo = std::stoi(record[6]);
-    int number = std::stoi(record[5]) - numberOfDays;
+    int cryo = std::stoi(record[COL_CRYO]);
+    int number = std::stoi(record[COL_HEALING]) - numberOfDays;
     int baseCryo = cryo;
     if (cryo < numberOfDays)
     {
@@ -170,31 +262,30 @@ void downtimeTracker::ReduceHealing(std::string_view discordId, int numberOfDays
         cryo -= numberOfDays;
     }
 
-    LastHealList = LastHealList.append(record[3]).append(" : ").append(std::to_string(numberOfDays)).append(", ");
+    LastHealList = LastHealList.append(record[COL_ACTOR_NAME]).append(" : ").append(std::to_string(numberOfDays)).append(", ");
     if (baseCryo - cryo != 0)
     {
-        LastCryoList = LastCryoList.append(record[3]).append(" : ").append(std::to_string(baseCryo - cryo)).append(", ");
+        LastCryoList = LastCryoList.append(record[COL_ACTOR_NAME]).append(" : ").append(std::to_string(baseCryo - cryo)).append(", ");
     }
 
-    auto sql = std::string("Update downtime set Healing=").append(std::to_string(number)).append(", Cryo=").append(std::to_string(cryo)).append(" where DiscordID  = \"").append(discordId).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
-    }
+    exec("UPDATE downtime SET Healing=?, Cryo=? WHERE DiscordID = ?;",
+         {std::to_string(number), std::to_string(cryo), std::string(discordId)});
 }
 
 Records downtimeTracker::GetAll()
 {
-    auto sql = "select * from downtime";
-    return select_stmt(sql);
+    return query("SELECT * FROM downtime;");
 }
 
 Record downtimeTracker::GetRecord(std::string_view discordId)
 {
-    auto sql = std::string("select * from downtime  where DiscordID  = \"") + std::string(discordId) + "\"";
-    return select_stmt(sql.c_str()).front();
+    auto records = query("SELECT * FROM downtime WHERE DiscordID = ?;", {std::string(discordId)});
+    if (records.empty())
+    {
+        std::cerr << "GetRecord: no record for DiscordID " << discordId << "\n";
+        return Record(7);
+    }
+    return records.front();
 }
 
 std::string downtimeTracker::FormTable()
@@ -206,11 +297,11 @@ std::string downtimeTracker::FormTable()
     Records records = GetAll();
     for (Record rec : records)
     {
-        bool cryo = std::stoi(rec[6]);
+        bool cryo = std::stoi(rec[COL_CRYO]);
         std::string cryoString;
-        int downtime = std::stoi(rec[4]);
+        int downtime = std::stoi(rec[COL_DOWNTIME]);
         std::string downtimeDays;
-        int healing = std::stoi(rec[5]);
+        int healing = std::stoi(rec[COL_HEALING]);
         std::string HealingDays;
         if (cryo)
         {
@@ -239,7 +330,7 @@ std::string downtimeTracker::FormTable()
             HealingDays = std::to_string(healing);
         }
 
-        vt.addRow(TranslitRusEng(rec[2]), TranslitRusEng(rec[3]), downtimeDays, HealingDays, cryoString);
+        vt.addRow(TranslitRusEng(rec[COL_USER_NAME]), TranslitRusEng(rec[COL_ACTOR_NAME]), downtimeDays, HealingDays, cryoString);
     }
 
     vt.print(ss);
@@ -249,27 +340,17 @@ std::string downtimeTracker::FormTable()
 
 void downtimeTracker::AddHealing(std::string_view discordId, int numberOfDaysToHeal, int cryo)
 {
-    auto record = GetRecord(discordId);    
-    int c = std::stoi(record[6]) + cryo;
-    int number = std::stoi(record[5]) + numberOfDaysToHeal;
-    auto sql = std::string("Update downtime set Healing=").append(std::to_string(number)).append(", Cryo=").append(std::to_string(c)).append(" where DiscordID  = \"").append(discordId).append("\";");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);    
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
-    }
+    auto record = GetRecord(discordId);
+    int c = std::stoi(record[COL_CRYO]) + cryo;
+    int number = std::stoi(record[COL_HEALING]) + numberOfDaysToHeal;
+    exec("UPDATE downtime SET Healing=?, Cryo=? WHERE DiscordID = ?;",
+         {std::to_string(number), std::to_string(c), std::string(discordId)});
 }
 
 void downtimeTracker::InsertEntry(std::string_view discordId, std::string_view userName, std::string_view actorName)
 {
-    auto sql = std::string("INSERT into downtime (DiscordID, UserName,ActorName) VALUES (\"").append(discordId).append("\",\"").append(userName).append("\",\"").append(actorName).append("\");");
-    rc = sqlite3_exec(ppDB, sql.c_str(), callback, nullptr, &zErrMsg);
-    if (rc != SQLITE_OK)
-    {
-        std::cerr << "SQL error: " << zErrMsg;
-        sqlite3_free(zErrMsg);
-    }
+    exec("INSERT INTO downtime (DiscordID, UserName, ActorName) VALUES (?, ?, ?);",
+         {std::string(discordId), std::string(userName), std::string(actorName)});
 }
 
 downTimeEntry::downTimeEntry(std::string_view userName, std::string_view actorName, int downtimeDays, int healing, int cryo) : UserName(userName), ActorName(actorName), DowntimeDays(downtimeDays), Healing(healing), Cryo(cryo) {}

@@ -21,7 +21,7 @@ class RABIDS : public SleepyDiscord::DiscordClient
 public:
 	using SleepyDiscord::DiscordClient::DiscordClient;
 	void onMessage(SleepyDiscord::Message message) override;
-	void startClient(config externalConfig);
+	void startClient(config& externalConfig);
 	void onInteraction(SleepyDiscord::Interaction interaction) override;
 	void onReady(SleepyDiscord::Ready ready) override;
 	void onFirstConnect();
@@ -63,7 +63,5 @@ private:
 	std::string tempActorsInternal;
 
 	downtimeTracker tracker;
-	std::string downtimeChannel = "938229440004116491";
-	std::string downtimeMessage = "938512392332120106";
 	std::string prevErrorMsg;
 };

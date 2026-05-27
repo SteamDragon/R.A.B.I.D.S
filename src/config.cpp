@@ -40,6 +40,8 @@ config::config(std::string configPath): _configPath(std::move(configPath)) {
 	template_.serverStoppedMessage = jsonConfig["ServerStoppedMessage"];
 	template_.serverFailedToStopMessage = jsonConfig["ServerFailedToStopMessage"];
 	restartTimeoutTemplate = jsonConfig["RestartTimeoutTemplate"];
+	downtimeChannelId = jsonConfig["DowntimeChannelId"];
+	downtimeMessageId = jsonConfig["DowntimeMessageId"];
 	template_.setRestartTimeoutFailedMessage = jsonConfig["SetRestartTimeoutFailedMessage"];
 	template_.generalError = jsonConfig["GeneralError"];
 	template_.downtimeError = jsonConfig["DowntimeError"];
@@ -127,6 +129,16 @@ std::string config::RestartTimeoutTemplate() const
 std::string config::GetConfigPath() const
 {
     return _configPath;
+}
+
+std::string config::DowntimeChannelId() const
+{
+    return downtimeChannelId;
+}
+
+std::string config::DowntimeMessageId() const
+{
+    return downtimeMessageId;
 }
 
 std::vector<std::string> config::ApplicationAndArguments() const

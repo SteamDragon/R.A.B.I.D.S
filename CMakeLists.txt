@@ -38,7 +38,7 @@ if(NOT sleepy-discord_POPULATED)
 endif()
 
 FetchContent_GetProperties(fmt)
-if(NOT sleepy-discord_POPULATED)
+if(NOT fmt_POPULATED)
     FetchContent_Populate(fmt)
     add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
