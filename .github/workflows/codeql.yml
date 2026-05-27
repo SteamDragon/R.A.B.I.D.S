@@ -41,16 +41,10 @@ jobs:
       run: sudo apt-get install libboost-all-dev
 
     - name: Configure CMake
-      run: |
-        export CC=/usr/bin/gcc-10
-        export CXX=/usr/bin/g++-10
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: |
-        export CC=/usr/bin/gcc-10
-        export CXX=/usr/bin/g++-10
-        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@ec3cf9c605b848da5f1e41e8452719eb1ccfb9a6

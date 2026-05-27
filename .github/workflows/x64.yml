@@ -22,17 +22,10 @@ jobs:
           sudo apt-get install libboost-all-dev
 
       - name: Configure CMake
-        run: |
-          export CC=/usr/bin/gcc-10
-          export CXX=/usr/bin/g++-10
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build
-        run: |
-          gcc --version
-          export CC=/usr/bin/gcc-10
-          export CXX=/usr/bin/g++-10
-          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Prepare artifacts
         run: |
