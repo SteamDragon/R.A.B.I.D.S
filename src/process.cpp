@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstring>
 #include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>

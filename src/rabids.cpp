@@ -3,8 +3,10 @@
 
 #include <numeric>
 #include <cstring>
+#include <cstdlib>
 #include <sstream>
 #include <vector>
+#include <openssl/sha.h>
 #include <unistd.h>
 #include <signal.h>
 
