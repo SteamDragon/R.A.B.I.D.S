@@ -35,39 +35,16 @@ FetchContent_GetProperties(sleepydiscord)
 if(NOT sleepydiscord_POPULATED)
     FetchContent_Populate(sleepydiscord)
 
-    # Pre-populate ASIO 1.22.0 so sleepydiscord's download_project
-    # (UPDATE_DISCONNECTED 1) skips download — websocketpp incompatible
-    # with ASIO ≥1.24 (missing io_service).
-    set(_asio_dir "${sleepydiscord_SOURCE_DIR}/deps/asio")
-    if(NOT EXISTS "${_asio_dir}/asio/include/asio/io_service.hpp")
-        message(STATUS "Downloading ASIO 1.22.0 for websocketpp compatibility")
-        set(_asio_archive "${CMAKE_BINARY_DIR}/asio-1-22-0.tar.gz")
-        file(DOWNLOAD
-            "https://github.com/chriskohlhoff/asio/archive/refs/tags/asio-1-22-0.tar.gz"
-            "${_asio_archive}"
-            STATUS _asio_dl_status
-        )
-        list(GET _asio_dl_status 0 _asio_dl_rc)
-        if(_asio_dl_rc EQUAL 0)
-            file(MAKE_DIRECTORY "${sleepydiscord_SOURCE_DIR}/deps")
-            if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.18)
-                file(ARCHIVE_EXTRACT INPUT "${_asio_archive}" DESTINATION "${sleepydiscord_SOURCE_DIR}/deps")
-            else()
-                find_program(_asio_tar tar)
-                if(_asio_tar)
-                    execute_process(COMMAND tar -xzf "${_asio_archive}" WORKING_DIRECTORY "${sleepydiscord_SOURCE_DIR}/deps")
-                else()
-                    message(FATAL_ERROR "tar not found - required to extract ASIO 1.22.0")
-                endif()
-            endif()
-            # GitHub archive extracts as asio-asio-1-22-0 → rename to asio
-            if(EXISTS "${sleepydiscord_SOURCE_DIR}/deps/asio-asio-1-22-0" AND NOT EXISTS "${_asio_dir}")
-                file(RENAME "${sleepydiscord_SOURCE_DIR}/deps/asio-asio-1-22-0" "${_asio_dir}")
-            endif()
-        else()
-            message(WARNING "Failed to download ASIO 1.22.0: ${_asio_dl_status}")
-        endif()
-    endif()
+    # Patch sleepydiscord's CMakeLists.txt to pin ASIO to 1-22-0 instead of master.
+    # Websocketpp is incompatible with ASIO ≥1.24 (io_service removed).
+    file(READ "${sleepydiscord_SOURCE_DIR}/CMakeLists.txt" _sd_cmake)
+    string(REGEX REPLACE
+        "(PROJ[ \t]+asio[ \t]*\n[ \t]*GIT_REPOSITORY[ \t]+https://github.com/chriskohlhoff/asio.git\n[ \t]*GIT_TAG)[ \t]+master"
+        "\\1        asio-1-22-0"
+        _sd_cmake "${_sd_cmake}"
+    )
+    file(WRITE "${sleepydiscord_SOURCE_DIR}/CMakeLists.txt" "${_sd_cmake}")
+    unset(_sd_cmake)
 
     add_subdirectory(${sleepydiscord_SOURCE_DIR} ${sleepydiscord_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
